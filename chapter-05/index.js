@@ -8,7 +8,14 @@ const typeDefs = `
     type Query {
         totalPhotos: Int!
     }
+
+    type Mutation {
+        postPhoto(name: String! description: String): Boolean!
+    }
 `;
+
+// 写真を格納するための配列を定義
+const photos = [];
 
 /**
  * リゾルバ
@@ -16,7 +23,17 @@ const typeDefs = `
 const resolvers = {
   Query: {
     //  Queryを作成する場合、必ずスキーマ名と同じリソルバ関数を定義する
-    totalPhotos: () => 42,
+    totalPhotos: () => photos.length,
+  },
+
+  // postPhotoミューテーションと対応するリゾルバ
+  Mutation: {
+    //   第一引数は親オブジェクトへの参照
+    //   リゾルバの第２引数: {name, description}のオブジェクト
+    postPhoto(parent, args) {
+      photos.push(args);
+      return true;
+    },
   },
 };
 
