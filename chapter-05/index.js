@@ -1,10 +1,13 @@
 const { ApolloServer } = require("apollo-server");
+const { GraphQLScalarType } = require("graphql");
 
 // 文字列としてスキーマ定義
 /**
  * スキーマ
  */
 const typeDefs = `
+    scalar DateTime
+
     enum PhotoCategory {
       SELECT
       PORTRAIT
@@ -21,6 +24,7 @@ const typeDefs = `
       category: PhotoCategory!
       postedBy: User!
       taggedUsers: [User!]!
+      created: DateTime!
     }
 
     type User {
@@ -39,7 +43,7 @@ const typeDefs = `
 
     type Query {
         totalPhotos: Int!
-        allPhotos: [Photo!]!
+        allPhotos(after: DateTime): [Photo!]!
     }
 
     type Mutation {
@@ -61,12 +65,14 @@ const photos = [
     description: "The heart chute is one of my favorite chutes",
     category: "ACTION",
     githubUser: "gPlake",
+    created: "3-29-1977",
   },
   {
     id: "2",
     name: "Enjoying the sunshine",
     category: "SELECT",
     githubUser: "sSchmidt",
+    created: "1-2-1985",
   },
   {
     id: "3",
@@ -74,6 +80,7 @@ const photos = [
     description: "25 laps on gunbrrel today",
     category: "LANDSCAPE",
     githubUser: "sSchmidt",
+    created: "2018-04-15T19:00:57.308Z",
   },
 ];
 
@@ -83,6 +90,11 @@ const tags = [
   { photoID: "2", userID: "sSchmidt" },
   { photoID: "2", userID: "gPlake" },
 ];
+
+// const d = new Date("4/18/2018");
+// console.log(d.toISOString());
+// const serialize = (value) => new Date(value).toISOString();
+const parseValue = (value) => new Date(value);
 
 // 1. ユニークIDをインクリメントするための変数
 let _id = 0;
@@ -96,7 +108,9 @@ const resolvers = {
   Query: {
     //  Queryを作成する場合、必ずスキーマ名と同じリソルバ関数を定義する
     totalPhotos: () => photos.length,
-    allPhotos: () => photos,
+    allPhotos: (parent, args) => {
+      return photos;
+    },
   },
 
   // postPhotoミューテーションと対応するリゾルバ
@@ -108,6 +122,7 @@ const resolvers = {
       const newPhoto = {
         id: _id++,
         ...args.input,
+        created: new Date(),
       };
       photos.push(newPhoto);
 
@@ -148,6 +163,16 @@ const resolvers = {
         // 写真IDの配列を写真オブジェクトの配列に変換する
         .map((photoID) => users.find((p) => p.githubLogin === photoID)),
   },
+
+  // カスタムスカラーのリゾルバを作成
+  DateTime: new GraphQLScalarType({
+    name: "DateTime",
+    description: "A valid date time value",
+    // DateTimeを処理するための3つの関数
+    parseValue: (value) => new Date(value),
+    serialize: (value) => new Date(value).toISOString(),
+    parseLiteral: (ast) => ast.value,
+  }),
 };
 
 // サーバーインスタンスを作成
