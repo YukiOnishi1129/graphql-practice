@@ -20,6 +20,7 @@ const typeDefs = `
       description: String
       category: PhotoCategory!
       postedBy: User!
+      taggedUsers: [User!]!
     }
 
     type User {
@@ -27,6 +28,7 @@ const typeDefs = `
       name: String
       avatar: String
       postedPhotos: [Photo!]!
+      inPhotos: [Photo!]!
     }
 
     input PostPhotoInput {
@@ -75,6 +77,13 @@ const photos = [
   },
 ];
 
+const tags = [
+  { photoID: "1", userID: "gPlake" },
+  { photoID: "2", userID: "sSchmidt" },
+  { photoID: "2", userID: "sSchmidt" },
+  { photoID: "2", userID: "gPlake" },
+];
+
 // 1. ユニークIDをインクリメントするための変数
 let _id = 0;
 // 写真を格納するための配列を定義
@@ -114,12 +123,30 @@ const resolvers = {
       // データの取得方法は実装者に委ねられる
       return users.find((u) => u.githubLogin === parent.githubUser);
     },
+
+    taggedUsers: (parent) =>
+      tags
+        // 対象の写真が関係しているタグの配列を返す
+        .filter((tag) => tag.photoID === parent.id)
+        // タグの配列をユーザーIDの配列に変換する
+        .map((tag) => tag.userID)
+        // ユーザーIDの配列をユーザーオブジェクトの配列に変換する
+        .map((userID) => users.find((u) => u.githubLogin === userID)),
   },
 
   User: {
     postedPhotos: (parent) => {
       return photos.filter((p) => p.githubUser === parent.githubLogin);
     },
+
+    inPhotos: (parent) =>
+      tags
+        // 対象のユーザーが関係しているタグの配列を返す
+        .filter((tag) => tag.photoID === parent.id)
+        // タグの配列をユーザーIDの配列に変換する
+        .map((tag) => tag.photoID)
+        // 写真IDの配列を写真オブジェクトの配列に変換する
+        .map((photoID) => users.find((p) => p.githubLogin === photoID)),
   },
 };
 
