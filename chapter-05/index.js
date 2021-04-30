@@ -5,15 +5,25 @@ const { ApolloServer } = require("apollo-server");
  * スキーマ
  */
 const typeDefs = `
+    type Photo {
+      id: ID!
+      url: String!
+      name: String!
+      description: String
+    }
+
     type Query {
         totalPhotos: Int!
+        allPhotos: [Photo!]!
     }
 
     type Mutation {
-        postPhoto(name: String! description: String): Boolean!
+        postPhoto(name: String! description: String): Photo!
     }
 `;
 
+// 1. ユニークIDをインクリメントするための変数
+let _id = 0;
 // 写真を格納するための配列を定義
 const photos = [];
 
@@ -24,6 +34,7 @@ const resolvers = {
   Query: {
     //  Queryを作成する場合、必ずスキーマ名と同じリソルバ関数を定義する
     totalPhotos: () => photos.length,
+    allPhotos: () => photos,
   },
 
   // postPhotoミューテーションと対応するリゾルバ
@@ -31,9 +42,21 @@ const resolvers = {
     //   第一引数は親オブジェクトへの参照
     //   リゾルバの第２引数: {name, description}のオブジェクト
     postPhoto(parent, args) {
-      photos.push(args);
-      return true;
+      // 2. 新しい写真を作成し、idを生成する
+      const newPhoto = {
+        id: _id++,
+        ...args,
+      };
+      photos.push(newPhoto);
+
+      // 3. 新しい写真を返す
+      return newPhoto;
     },
+  },
+
+  // トリビアルリゾルバ (ルートに追加されたリゾルバ)
+  Photo: {
+    url: (parent) => `http://yoursite.com/img/${parent.id}.jpg`,
   },
 };
 
