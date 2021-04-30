@@ -5,10 +5,25 @@ const { ApolloServer } = require("apollo-server");
  * スキーマ
  */
 const typeDefs = `
+    enum PhotoCategory {
+      SELECT
+      PORTRAIT
+      ACTION
+      LANDSCAPE
+      GRAPHIC
+    }
+
     type Photo {
       id: ID!
       url: String!
       name: String!
+      description: String
+      category: PhotoCategory!
+    }
+
+    input PostPhotoInput {
+      name: String!
+      category: PhotoCategory=PORTRAIT
       description: String
     }
 
@@ -18,7 +33,7 @@ const typeDefs = `
     }
 
     type Mutation {
-        postPhoto(name: String! description: String): Photo!
+        postPhoto(input: PostPhotoInput!): Photo!
     }
 `;
 
@@ -45,7 +60,7 @@ const resolvers = {
       // 2. 新しい写真を作成し、idを生成する
       const newPhoto = {
         id: _id++,
-        ...args,
+        ...args.input,
       };
       photos.push(newPhoto);
 
