@@ -51,6 +51,8 @@ A root type showing all the queries (READ)
 type Query {
   totalPhotos: Int!
   allPhotos: [Photo!]!
+  totalUsers: Int!
+  allUsers: [User!]!
 }
 
 """
