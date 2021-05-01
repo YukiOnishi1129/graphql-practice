@@ -25,6 +25,11 @@ type Photo {
   created: DateTime!
 }
 
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
 """
 A category enum of photos
 """
@@ -60,4 +65,6 @@ A root type showing all the mutations (CREATE, UPDATE and DELETE)
 """
 type Mutation {
   postPhoto(input: PostPhotoInput!): Photo!
+
+  githubAuth(code: String!): AuthPayload!
 }
