@@ -8,16 +8,36 @@ let _id = 0;
 module.exports = {
   //   第一引数は親オブジェクトへの参照
   //   リゾルバの第２引数: {name, description}のオブジェクト
-  postPhoto: (parent, args) => {
-    // 2. 新しい写真を作成し、idを生成する
+  // postPhoto: (parent, args) => {
+  //   // 2. 新しい写真を作成し、idを生成する
+  //   const newPhoto = {
+  //     id: _id++,
+  //     ...args.input,
+  //     created: new Date(),
+  //   };
+  //   photos.push(newPhoto);
+
+  //   // 3. 新しい写真を返す
+  //   return newPhoto;
+  // },
+
+  async postPhoto(parent, args, { db, currentUser }) {
+    // 1. コンテキストにユーザーがなければエラーを投げる
+    if (!currentUser) {
+      throw new Error("only an authorized user can post a photo");
+    }
+
+    // 2. 現在のユーザーのIDとphotoを保存する
     const newPhoto = {
-      id: _id++,
       ...args.input,
+      userID: currentUser.githubLogin,
       created: new Date(),
     };
-    photos.push(newPhoto);
 
-    // 3. 新しい写真を返す
+    // 3.新しいphotoを追加し、データベースが生成したIDを取得する
+    const { insertedIds } = await db.collection("photos").insert(newPhoto);
+    newPhoto.id = insertedIds[0];
+
     return newPhoto;
   },
 
