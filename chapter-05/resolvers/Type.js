@@ -1,3 +1,6 @@
+/**
+ * 型リゾルバ
+ */
 const { GraphQLScalarType } = require("graphql");
 
 module.exports = {

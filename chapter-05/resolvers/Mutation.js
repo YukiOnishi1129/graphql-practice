@@ -3,7 +3,7 @@ const fetch = require("node-fetch");
 const { ObjectID } = require("mongodb");
 
 // 1. ユニークIDをインクリメントするための変数
-let _id = 0;
+// let _id = 0;
 
 module.exports = {
   //   第一引数は親オブジェクトへの参照
@@ -21,6 +21,15 @@ module.exports = {
   //   return newPhoto;
   // },
 
+  /**
+   * 写真登録処理
+   * typeDef.graphql記載の「Mutation postPhoto(input: PostPhotoInput!): Photo! 」
+   * 戻り値が型リゾルバの「Photo」のparentに対応する
+   * @param {*} parent
+   * @param {PostPhotoInput!} args
+   * @param {*} param2
+   * @returns
+   */
   async postPhoto(parent, args, { db, currentUser }) {
     // 1. コンテキストにユーザーがなければエラーを投げる
     if (!currentUser) {
@@ -41,6 +50,13 @@ module.exports = {
     return newPhoto;
   },
 
+  /**
+   * GithubLogin処理
+   * @param {*} parent
+   * @param {String!} param1
+   * @param {*} param2
+   * @returns
+   */
   async githubAuth(parent, { code }, { db }) {
     // 1. Githubからデータを取得する
     let {
@@ -77,5 +93,48 @@ module.exports = {
 
     // 5. ユーザーデータとトークンを返す
     return { user, token: access_token };
+  },
+
+  /**
+   * フェイクユーザー作成
+   * @param {*} root
+   * @param {Int!} param1
+   * @param {*} param2
+   * @returns
+   */
+  addFakeUsers: async (parent, { count }, { db }) => {
+    const randomUserApi = `https://randomuser.me/api/?results=${count}`;
+    const { results } = await fetch(randomUserApi).then((res) => res.json());
+
+    const users = results.map((r) => ({
+      githubLogin: r.login.username,
+      name: `${r.name.first} ${r.name.last}`,
+      avatar: r.picture.thumbnail,
+      githubToken: r.login.sha1,
+    }));
+
+    await db.collection("users").insertMany(users);
+
+    return users;
+  },
+
+  /**
+   * フェイクユーザー認証処理
+   * @param {*} parent
+   * @param {String!} param1
+   * @param {*} param2
+   * @returns
+   */
+  async fakeUserAuth(parent, { githubLogin }, { db }) {
+    const user = await db.collection("users").findOne({ githubLogin });
+
+    if (!user) {
+      throw new Error(`Cannot find user with githubLogin "${githubLogin}"`);
+    }
+
+    return {
+      token: user.githubToken,
+      user,
+    };
   },
 };
