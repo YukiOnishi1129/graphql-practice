@@ -1,17 +1,40 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import React from "react";
+import ReactDOM from "react-dom";
+import App from "./App";
+import { ApolloProvider } from "react-apollo";
+import ApolloClient, { gql } from "apollo-boost";
+import { render } from "@testing-library/react";
 
-ReactDOM.render(
-  <React.StrictMode>
+// GraphQLサービスへのネットワーク接続を全て管理するインスタンスを作成
+const client = new ApolloClient({ uri: "http://localhost:4000/graphql" });
+
+//gql: クエリをパースして、抽象構文木(AST)を構築する
+// const query = gql`
+//   {
+//     totalUsers
+//     totalPhotos
+//   }
+// `;
+
+// ASTをクライアントに送ることができる
+// client.query({ query })：クエリをHTTPリクエストとしてGraphQLサービスに送信し、レスポンスをプロミスの形へラップして返却する
+// レスポンスをローカルのメモリにキャッシュする
+// client.extract(): キャッシュを確認する
+// client
+//   .query({ query })
+//   .then(({ data }) => console.log("data", data))
+//   .catch(console.error);
+
+// console.log("cache", client.extract());
+// client
+//   .query({ query })
+//   .then(() => console.log("cache", client.extract()))
+//   .catch(console.error);
+
+render(
+  // clientをグローバルスコープに設定
+  <ApolloProvider client={client}>
     <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+  </ApolloProvider>,
+  document.getElementById("root")
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
