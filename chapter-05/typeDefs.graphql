@@ -1,0 +1,75 @@
+scalar DateTime
+
+"""
+A user who has been authorized by GitHub at least once
+"""
+type User {
+  githubLogin: ID!
+  name: String
+  avatar: String
+  postedPhotos: [Photo!]!
+  inPhotos: [Photo!]!
+}
+
+"""
+The details of a photo
+"""
+type Photo {
+  id: ID!
+  name: String!
+  url: String!
+  description: String
+  category: PhotoCategory!
+  postedBy: User!
+  taggedUsers: [User!]!
+  created: DateTime!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+"""
+A category enum of photos
+"""
+enum PhotoCategory {
+  SELFIE
+  PORTRAIT
+  ACTION
+  LANDSCAPE
+  GRAPHIC
+}
+
+"""
+The input sent with the postPhoto Mutation
+"""
+input PostPhotoInput {
+  name: String!
+  category: PhotoCategory = PORTRAIT
+  description: String
+}
+
+"""
+A root type showing all the queries (READ)
+"""
+type Query {
+  me: User
+  totalPhotos: Int!
+  allPhotos: [Photo!]!
+  totalUsers: Int!
+  allUsers: [User!]!
+}
+
+"""
+A root type showing all the mutations (CREATE, UPDATE and DELETE)
+"""
+type Mutation {
+  postPhoto(input: PostPhotoInput!): Photo!
+
+  githubAuth(code: String!): AuthPayload!
+
+  addFakeUsers(count: Int = 1): [User!]!
+
+  fakeUserAuth(githubLogin: ID!): AuthPayload!
+}
