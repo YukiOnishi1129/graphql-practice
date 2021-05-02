@@ -1,6 +1,17 @@
 import React from "react";
-import { Query } from "react-apollo";
+import { Query, Mutation } from "react-apollo";
+import { gql } from "apollo-boost";
 import { ROOT_QUERY } from "./App";
+
+const ADD_FAKE_USERS_MUTATION = gql`
+  mutation addFakeUsers($count: Int!) {
+    addFakeUsers(count: $count) {
+      githubLogin
+      name
+      avatar
+    }
+  }
+`;
 
 const Users = () => (
   // pollInterval: 指定した時間で繰り返しデータを取得する
@@ -27,6 +38,16 @@ const UserList = ({ count, users, refetchUsers }) => (
     <p>{count} Users</p>
     {/* refetchUsersでデータを再取得 */}
     <button onClick={() => refetchUsers()}>Refetch Users</button>
+    {/* mutation: mutationクエリを指定 */}
+    {/* variables: クエリの引数を指定 */}
+    {/* refetchQueries: ミューテーションが完了した際に実行するQueryを指定 */}
+    <Mutation
+      mutation={ADD_FAKE_USERS_MUTATION}
+      variables={{ count: 1 }}
+      refetchQueries={[{ query: ROOT_QUERY }]}
+    >
+      {(addFakeUsers) => <button onClick={addFakeUsers}>Add Fake Users</button>}
+    </Mutation>
     <ul>
       {users.map((user) => (
         <UserListItem
