@@ -1,12 +1,27 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { render } from "react-dom";
 import App from "./App";
 import { ApolloProvider } from "react-apollo";
-import ApolloClient, { gql } from "apollo-boost";
-import { render } from "@testing-library/react";
+import ApolloClient, { InMemoryCache } from "apollo-boost";
+import { persistCache } from "apollo-cache-persist";
+
+// cacheオブジェクト作成
+const cache = new InMemoryCache();
+persistCache({
+  cache,
+  storage: localStorage, // キャッシュをブラウザのローカルストレージに保存
+});
+
+// 起動時にキャッシュデータがあれば初期化
+if (localStorage["apollo-cache-persist"]) {
+  let cacheData = JSON.parse(localStorage["apollo-cache-persist"]);
+  // cacheインスタンスに追加
+  cache.restore(cacheData);
+}
 
 // GraphQLサービスへのネットワーク接続を全て管理するインスタンスを作成
 const client = new ApolloClient({
+  cache,
   uri: "http://localhost:4000/graphql",
   // Apollo Clientのrequestを追加
   // 全てのoperationがGraphQLサービスに送信される前にその内容を受け取る

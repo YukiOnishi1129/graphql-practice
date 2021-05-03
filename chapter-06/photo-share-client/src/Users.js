@@ -16,7 +16,7 @@ const ADD_FAKE_USERS_MUTATION = gql`
 const Users = () => (
   // pollInterval: 指定した時間で繰り返しデータを取得する
   //   pollInterval={1000}
-  <Query query={ROOT_QUERY}>
+  <Query query={ROOT_QUERY} fetchPolicy="cache-and-network">
     {/* loading: dataを取得するまでtrue */}
     {/* refetch: データを再取得 */}
     {({ data, loading, refetch }) =>
