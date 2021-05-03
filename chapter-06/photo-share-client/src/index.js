@@ -6,7 +6,20 @@ import ApolloClient, { gql } from "apollo-boost";
 import { render } from "@testing-library/react";
 
 // GraphQLサービスへのネットワーク接続を全て管理するインスタンスを作成
-const client = new ApolloClient({ uri: "http://localhost:4000/graphql" });
+const client = new ApolloClient({
+  uri: "http://localhost:4000/graphql",
+  // Apollo Clientのrequestを追加
+  // 全てのoperationがGraphQLサービスに送信される前にその内容を受け取る
+  // 送信前にローカルストレージにあるgithub tokenをheadersに格納する
+  request: (operation) => {
+    operation.setContext((context) => ({
+      headers: {
+        ...context.headers,
+        authorization: localStorage.getItem("token"),
+      },
+    }));
+  },
+});
 
 //gql: クエリをパースして、抽象構文木(AST)を構築する
 // const query = gql`
