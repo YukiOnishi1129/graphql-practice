@@ -78,4 +78,5 @@ Subscription
 """
 type Subscription {
   newPhoto: Photo!
+  newUser: User!
 }

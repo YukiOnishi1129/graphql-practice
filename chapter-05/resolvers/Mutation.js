@@ -60,7 +60,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  async githubAuth(parent, { code }, { db }) {
+  async githubAuth(parent, { code }, { db, pubsub }) {
     // 1. Githubからデータを取得する
     let {
       message,
@@ -90,9 +90,13 @@ module.exports = {
     // 4. 新しい情報を元にレコードを追加したり更新する
     const {
       ops: [user],
+      result,
     } = await db
       .collection("users")
       .replaceOne({ githubLogin: login }, latestUserInfo, { upsert: true });
+
+    // サブスクリプション起動
+    result.upserted && pubsub.publish("user-added", { newUser: user });
 
     // 5. ユーザーデータとトークンを返す
     return { user, token: access_token };
@@ -105,7 +109,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  addFakeUsers: async (parent, { count }, { db }) => {
+  addFakeUsers: async (parent, { count }, { db, pubsub }) => {
     const randomUserApi = `https://randomuser.me/api/?results=${count}`;
     const { results } = await fetch(randomUserApi).then((res) => res.json());
 
@@ -117,6 +121,16 @@ module.exports = {
     }));
 
     await db.collection("users").insertMany(users);
+
+    const newUsers = await db
+      .collection("users")
+      .find()
+      .sort({ _id: -1 })
+      .limit(count)
+      .toArray();
+
+    // サブスクリプション起動
+    newUsers.forEach((newUser) => pubsub.publish("user-added", { newUser }));
 
     return users;
   },
