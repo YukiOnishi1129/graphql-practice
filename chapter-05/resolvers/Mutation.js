@@ -30,7 +30,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  async postPhoto(parent, args, { db, currentUser }) {
+  async postPhoto(parent, args, { db, currentUser, pubsub }) {
     // 1. コンテキストにユーザーがなければエラーを投げる
     if (!currentUser) {
       throw new Error("only an authorized user can post a photo");
@@ -46,6 +46,9 @@ module.exports = {
     // 3.新しいphotoを追加し、データベースが生成したIDを取得する
     const { insertedIds } = await db.collection("photos").insert(newPhoto);
     newPhoto.id = insertedIds[0];
+
+    // データをサブスクリプションリゾルバに送る
+    pubsub.publish("photo-added", { newPhoto });
 
     return newPhoto;
   },

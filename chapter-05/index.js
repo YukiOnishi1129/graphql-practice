@@ -1,4 +1,4 @@
-const { ApolloServer } = require("apollo-server-express");
+const { ApolloServer, PubSub } = require("apollo-server-express");
 const express = require("express");
 const expressPlayground = require("graphql-playground-middleware-express")
   .default;
@@ -32,15 +32,19 @@ async function start() {
   // DB接続をコンテキストオブジェクトに追加
   // const context = { db };
 
+  const pubsub = new PubSub();
   // サーバーインスタンスを作成
   // その際、typeDefs(スキーマ)とリソルバを引数に取る
   const server = new ApolloServer({
     typeDefs, // スキーマ
     resolvers, // リゾルバ
-    context: async ({ req }) => {
-      const githubToken = req.headers.authorization;
+    context: async ({ req, connection }) => {
+      const githubToken = req
+        ? req.headers.authorization // QueryやMutationの場合、HTTPを使用しているのでreqから取得
+        : connection.context.authorization; // サブスクリプションを受け取った場合、コネクションのcontextを使用して認可情報の詳細を受け取る
+
       const currentUser = await db.collection("users").findOne({ githubToken });
-      return { db, currentUser };
+      return { db, currentUser, pubsub };
     }, // コンテキスト (リクエストの度にユーザー情報をコンテキストに設定するため、関数の記述で使用)
   });
 
@@ -61,7 +65,7 @@ async function start() {
   // 特定のポートでリッスンする
   httpServer.listen({ port: 4000 }, () => {
     console.log(
-      `GraphQL Server running @ http://localhost:4000${server.graphqlPath}`
+      `GraphQL Server running at http://localhost:4000${server.graphqlPath}`
     );
   });
 }

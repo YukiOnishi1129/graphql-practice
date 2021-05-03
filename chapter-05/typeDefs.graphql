@@ -73,3 +73,9 @@ type Mutation {
 
   fakeUserAuth(githubLogin: ID!): AuthPayload!
 }
+"""
+Subscription
+"""
+type Subscription {
+  newPhoto: Photo!
+}
