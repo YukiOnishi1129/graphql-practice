@@ -4,6 +4,7 @@ const expressPlayground = require("graphql-playground-middleware-express")
   .default;
 const { readFileSync } = require("fs");
 const { MongoClient } = require("mongodb");
+const { createServer } = require("http");
 require("dotenv").config();
 
 // スキーマを定義したテキストファイルを呼び出し
@@ -51,8 +52,14 @@ async function start() {
   // playground用のルート
   app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
 
+  // Apollo Serverでサブスクリプションを使用するためには、HTTPサーバーが必要
+  // httpサーバーを作成
+  const httpServer = createServer(app);
+  // server.installSubscriptionHandlers: webSocketを動作させるためのコード
+  server.installSubscriptionHandlers(httpServer);
+
   // 特定のポートでリッスンする
-  app.listen({ port: 4000 }, () => {
+  httpServer.listen({ port: 4000 }, () => {
     console.log(
       `GraphQL Server running @ http://localhost:4000${server.graphqlPath}`
     );
