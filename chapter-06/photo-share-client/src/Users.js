@@ -13,12 +13,12 @@ const ADD_FAKE_USERS_MUTATION = gql`
   }
 `;
 
-const updateUserCache = (cache, { data: { addFakeUsers } }) => {
-  let data = cache.readQuery({ query: ROOT_QUERY });
-  data.totalUsers += addFakeUsers.length;
-  data.allUsers = [...data.allUsers, ...addFakeUsers];
-  cache.writeQuery({ query: ROOT_QUERY, data });
-};
+// const updateUserCache = (cache, { data: { addFakeUsers } }) => {
+//   let data = cache.readQuery({ query: ROOT_QUERY });
+//   data.totalUsers += addFakeUsers.length;
+//   data.allUsers = [...data.allUsers, ...addFakeUsers];
+//   cache.writeQuery({ query: ROOT_QUERY, data });
+// };
 
 const Users = () => (
   // pollInterval: 指定した時間で繰り返しデータを取得する
@@ -48,11 +48,7 @@ const UserList = ({ count, users, refetchUsers }) => (
     {/* mutation: mutationクエリを指定 */}
     {/* variables: クエリの引数を指定 */}
     {/* refetchQueries: ミューテーションが完了した際に実行するQueryを指定 */}
-    <Mutation
-      mutation={ADD_FAKE_USERS_MUTATION}
-      variables={{ count: 1 }}
-      update={updateUserCache}
-    >
+    <Mutation mutation={ADD_FAKE_USERS_MUTATION} variables={{ count: 1 }}>
       {(addFakeUsers) => <button onClick={addFakeUsers}>Add Fake Users</button>}
     </Mutation>
     <ul>
