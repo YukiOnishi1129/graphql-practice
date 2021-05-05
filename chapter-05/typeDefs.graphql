@@ -1,5 +1,9 @@
 scalar DateTime
 
+# Uploadのスカラーを定義するとエラー？
+# https://github.com/ardatan/graphql-import/issues/286#issuecomment-576221893
+# scalar Upload
+
 """
 A user who has been authorized by GitHub at least once
 """
@@ -48,6 +52,7 @@ input PostPhotoInput {
   name: String!
   category: PhotoCategory = PORTRAIT
   description: String
+  file: Upload!
 }
 
 """
@@ -72,4 +77,11 @@ type Mutation {
   addFakeUsers(count: Int = 1): [User!]!
 
   fakeUserAuth(githubLogin: ID!): AuthPayload!
+}
+"""
+Subscription
+"""
+type Subscription {
+  newPhoto: Photo!
+  newUser: User!
 }

@@ -1,4 +1,5 @@
-const { authorizeWithGithub } = require("../lib");
+const { authorizeWithGithub, uploadStream } = require("../lib");
+const path = require("path");
 const fetch = require("node-fetch");
 const { ObjectID } = require("mongodb");
 
@@ -30,7 +31,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  async postPhoto(parent, args, { db, currentUser }) {
+  async postPhoto(parent, args, { db, currentUser, pubsub }) {
     // 1. コンテキストにユーザーがなければエラーを投げる
     if (!currentUser) {
       throw new Error("only an authorized user can post a photo");
@@ -47,6 +48,21 @@ module.exports = {
     const { insertedIds } = await db.collection("photos").insert(newPhoto);
     newPhoto.id = insertedIds[0];
 
+    const toPath = path.join(
+      __dirname,
+      "..",
+      "assets",
+      "photos",
+      `${newPhoto.id}.jpg`
+    );
+
+    const { createReadStream } = await args.input.file;
+    const stream = await createReadStream();
+    await uploadStream(stream, toPath);
+
+    // データをサブスクリプションリゾルバに送る
+    pubsub.publish("photo-added", { newPhoto: photo });
+
     return newPhoto;
   },
 
@@ -57,7 +73,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  async githubAuth(parent, { code }, { db }) {
+  async githubAuth(parent, { code }, { db, pubsub }) {
     // 1. Githubからデータを取得する
     let {
       message,
@@ -87,9 +103,13 @@ module.exports = {
     // 4. 新しい情報を元にレコードを追加したり更新する
     const {
       ops: [user],
+      result,
     } = await db
       .collection("users")
       .replaceOne({ githubLogin: login }, latestUserInfo, { upsert: true });
+
+    // サブスクリプション起動
+    result.upserted && pubsub.publish("user-added", { newUser: user });
 
     // 5. ユーザーデータとトークンを返す
     return { user, token: access_token };
@@ -102,7 +122,7 @@ module.exports = {
    * @param {*} param2
    * @returns
    */
-  addFakeUsers: async (parent, { count }, { db }) => {
+  addFakeUsers: async (parent, { count }, { db, pubsub }) => {
     const randomUserApi = `https://randomuser.me/api/?results=${count}`;
     const { results } = await fetch(randomUserApi).then((res) => res.json());
 
@@ -114,6 +134,16 @@ module.exports = {
     }));
 
     await db.collection("users").insertMany(users);
+
+    const newUsers = await db
+      .collection("users")
+      .find()
+      .sort({ _id: -1 })
+      .limit(count)
+      .toArray();
+
+    // サブスクリプション起動
+    newUsers.forEach((newUser) => pubsub.publish("user-added", { newUser }));
 
     return users;
   },
