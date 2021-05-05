@@ -5,6 +5,7 @@ const expressPlayground = require("graphql-playground-middleware-express")
 const { readFileSync } = require("fs");
 const { MongoClient } = require("mongodb");
 const { createServer } = require("http");
+const path = require("path");
 require("dotenv").config();
 
 // スキーマを定義したテキストファイルを呼び出し
@@ -55,6 +56,12 @@ async function start() {
   app.get("/", (req, res) => res.end("Welcome to the PhotoShare API"));
   // playground用のルート
   app.get("/playground", expressPlayground({ endpoint: "/graphql" }));
+
+  // /img/photosへのHTTPリクエストに対し、assets/photos内の静的ファイルを提供できるようにする
+  app.use(
+    "/img/photos",
+    express.static(path.join(__dirname, "assets", "photos"))
+  );
 
   // Apollo Serverでサブスクリプションを使用するためには、HTTPサーバーが必要
   // httpサーバーを作成

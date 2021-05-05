@@ -61,4 +61,25 @@ const authorizeWithGithub = async (credentials) => {
   return { ...githubUser, access_token };
 };
 
-module.exports = { authorizeWithGithub };
+/**
+ * uploadStream
+ * 画像ファイルをローカルに保存
+ * (本来はクラウドサービスに保存させる)
+ * @param {*} stream
+ * @param {*} path
+ * @returns
+ */
+const uploadStream = (stream, path) =>
+  new Promise((resolve, reject) => {
+    stream
+      .on("error", (error) => {
+        if (stream.truncated) {
+          fs.unlinkSync(path);
+        }
+        reject(error);
+      })
+      .on("end", resolve)
+      .pipe(fs.createWriteStream(path));
+  });
+
+module.exports = { authorizeWithGithub, uploadStream };

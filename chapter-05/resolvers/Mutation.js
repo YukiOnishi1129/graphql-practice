@@ -1,4 +1,5 @@
-const { authorizeWithGithub } = require("../lib");
+const { authorizeWithGithub, uploadStream } = require("../lib");
+const path = require("path");
 const fetch = require("node-fetch");
 const { ObjectID } = require("mongodb");
 
@@ -47,8 +48,19 @@ module.exports = {
     const { insertedIds } = await db.collection("photos").insert(newPhoto);
     newPhoto.id = insertedIds[0];
 
+    const toPath = path.join(
+      __dirname,
+      "..",
+      "assets",
+      "photos",
+      `${photo.id}.jpg`
+    );
+
+    const { stream } = await args.input.file;
+    await uploadStream(input.file, toPath);
+
     // データをサブスクリプションリゾルバに送る
-    pubsub.publish("photo-added", { newPhoto });
+    pubsub.publish("photo-added", { newPhoto: photo });
 
     return newPhoto;
   },
