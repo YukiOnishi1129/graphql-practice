@@ -69,8 +69,9 @@ const authorizeWithGithub = async (credentials) => {
  * @param {*} path
  * @returns
  */
-const uploadStream = (stream, path) =>
-  new Promise((resolve, reject) => {
+const uploadStream = (stream, path) => {
+  // returnで返さないと画像アップロードがおかしくなる
+  return new Promise((resolve, reject) => {
     stream
       .on("error", (error) => {
         if (stream.truncated) {
@@ -81,5 +82,6 @@ const uploadStream = (stream, path) =>
       .on("end", resolve)
       .pipe(fs.createWriteStream(path));
   });
+};
 
 module.exports = { authorizeWithGithub, uploadStream };

@@ -1,9 +1,11 @@
 import React, { Component } from "react";
-import Users from "./Users";
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter, Switch, Route } from "react-router-dom";
 import { gql } from "apollo-boost";
-import AuthorizedUser from "./AuthorizedUser";
 import { withApollo } from "react-apollo";
+import Users from "./Users";
+import Photos from "./Photos";
+import PostPhoto from "./PostPhoto";
+import AuthorizedUser from "./AuthorizedUser";
 
 export const ROOT_QUERY = gql`
   query allUsers {
@@ -13,6 +15,11 @@ export const ROOT_QUERY = gql`
     }
     me {
       ...userInfo
+    }
+    allPhotos {
+      id
+      name
+      url
     }
   }
 
@@ -51,16 +58,35 @@ class App extends Component {
   }
 
   componentWillMount() {
-    this.listenForUsers.unsubscribe();
+    // unsubscribeがない、でエラーになる解消法
+    // https://stackoverflow.com/questions/41902534/angular-2-cannot-read-property-unsubscribe-of-undefined
+    if (this.listenForUsers) {
+      this.listenForUsers.unsubscribe();
+    }
   }
 
   render() {
     return (
       <BrowserRouter>
-        <div>
-          <AuthorizedUser />
-          <Users />
-        </div>
+        <Switch>
+          <Route
+            exact
+            path="/"
+            component={() => (
+              <>
+                <AuthorizedUser />
+                <Users />
+                <Photos />
+              </>
+            )}
+          />
+          <Route path="/newPhoto" component={PostPhoto} />
+          <Route
+            component={({ location }) => (
+              <h1>"{location.pathname}" not found</h1>
+            )}
+          />
+        </Switch>
       </BrowserRouter>
     );
   }

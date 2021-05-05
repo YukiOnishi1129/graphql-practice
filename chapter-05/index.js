@@ -18,6 +18,8 @@ async function start() {
   // express()を呼び出し、Expressアプリケーションを作成
   const app = express();
 
+  app.use(express.json({ limit: "100mb" }));
+
   const MONGO_DB_HOST = process.env.DB_HOST;
 
   // DBアクセス

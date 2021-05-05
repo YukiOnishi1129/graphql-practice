@@ -14,6 +14,7 @@ import {
 import { WebSocketLink } from "apollo-link-ws";
 import { getMainDefinition } from "apollo-utilities";
 import { persistCache } from "apollo-cache-persist";
+import { createUploadLink } from "apollo-upload-client";
 
 // cacheオブジェクト作成
 const cache = new InMemoryCache();
@@ -30,7 +31,8 @@ if (localStorage["apollo-cache-persist"]) {
 }
 
 // HTTPリクエストを送信するために使用
-const httpLink = new HttpLink({ uri: "http://localhost:4000/graphql" });
+// apollo-upload-clientの「createUploadLink」で作成 (multipart/form-dataリクエストをサポート)
+const httpLink = new createUploadLink({ uri: "http://localhost:4000/graphql" });
 
 const authLink = new ApolloLink((operation, forward) => {
   operation.setContext((context) => ({

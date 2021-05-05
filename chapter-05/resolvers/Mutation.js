@@ -53,11 +53,12 @@ module.exports = {
       "..",
       "assets",
       "photos",
-      `${photo.id}.jpg`
+      `${newPhoto.id}.jpg`
     );
 
-    const { stream } = await args.input.file;
-    await uploadStream(input.file, toPath);
+    const { createReadStream } = await args.input.file;
+    const stream = await createReadStream();
+    await uploadStream(stream, toPath);
 
     // データをサブスクリプションリゾルバに送る
     pubsub.publish("photo-added", { newPhoto: photo });
