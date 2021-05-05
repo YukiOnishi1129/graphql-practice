@@ -6,6 +6,9 @@ const { readFileSync } = require("fs");
 const { MongoClient } = require("mongodb");
 const { createServer } = require("http");
 const path = require("path");
+const depthLimit = require("graphql-depth-limit");
+const { createComplexityLimitRule } = require("graphql-validation-complexity");
+const { ApolloEngine } = require("apollo-engine");
 require("dotenv").config();
 
 // スキーマを定義したテキストファイルを呼び出し
@@ -18,7 +21,7 @@ async function start() {
   // express()を呼び出し、Expressアプリケーションを作成
   const app = express();
 
-  app.use(express.json({ limit: "100mb" }));
+  // app.use(express.json({ limit: "100mb" }));
 
   const MONGO_DB_HOST = process.env.DB_HOST;
 
@@ -41,6 +44,13 @@ async function start() {
   const server = new ApolloServer({
     typeDefs, // スキーマ
     resolvers, // リゾルバ
+    validationRules: [
+      depthLimit(5), // クエリ深さ制限
+      // クエリ複雑さ制限 1000を超えるクエリは実行されない
+      createComplexityLimitRule(1000, {
+        onCost: (cost) => console.log("query cost: ", cost),
+      }),
+    ],
     context: async ({ req, connection }) => {
       const githubToken = req
         ? req.headers.authorization // QueryやMutationの場合、HTTPを使用しているのでreqから取得
@@ -49,6 +59,24 @@ async function start() {
       const currentUser = await db.collection("users").findOne({ githubToken });
       return { db, currentUser, pubsub };
     }, // コンテキスト (リクエストの度にユーザー情報をコンテキストに設定するため、関数の記述で使用)
+  });
+
+  // Apollo Engineのインスタンスの作成
+  // https://www.m3tech.blog/entry/graphql-apollo-react-express-nodejs
+  const engine = new ApolloEngine({
+    apiKey: process.env.APOLLO_ENGINE_API_KEY,
+    // メモリキャッシュの設定
+    stores: [
+      {
+        name: "inMemEmbeddedCache",
+        inMemory: {
+          cacheSize: 104857600, // 100 MB、デフォルトは50MB
+        },
+      },
+    ],
+    logging: {
+      level: "INFO", // ログの設定変更。DEBUGにするとより細かい情報を確認できます
+    },
   });
 
   // applyMiddleware()を呼び出し、Expressにミドルウェアを追加する
@@ -70,6 +98,8 @@ async function start() {
   const httpServer = createServer(app);
   // server.installSubscriptionHandlers: webSocketを動作させるためのコード
   server.installSubscriptionHandlers(httpServer);
+  // 5秒間のタイムアウト
+  httpServer.timeout = 5000;
 
   // 特定のポートでリッスンする
   httpServer.listen({ port: 4000 }, () => {
