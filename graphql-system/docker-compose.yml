@@ -1,0 +1,47 @@
+version: "3.8"
+services:
+  web:
+    container_name: next_app
+    build: ./front
+    tty: true
+    volumes:
+      - ./front:/front
+    command: sh -c 'yarn && yarn start'
+    ports:
+      - 4000:4000
+
+  server:
+    container_name: express_app
+    build: ./server
+    tty: true
+    depends_on:
+      - db
+    volumes:
+      - ./server:/server
+      - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
+    environment:
+      TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
+    command: sh -c 'yarn && yarn start'
+    ports:
+      - 4000:4000
+    security_opt:
+      - seccomp:unconfined
+
+  db:
+    container_name: express_db
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - "TZ=Asia/Tokyo" # タイムゾーンを日本時刻に設定
+    image: mysql:5.7
+    command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
+    volumes:
+      - express_data:/var/lib/mysql
+      - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
+    ports:
+      - 3306:3306
+
+volumes:
+  express_data:
