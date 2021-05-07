@@ -8,7 +8,7 @@ services:
       - ./front:/front
     environment:
       TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
-    command: sh -c 'yarn && yarn start'
+    command: sh -c 'yarn && yarn dev'
     ports:
       - 80:3000
 
