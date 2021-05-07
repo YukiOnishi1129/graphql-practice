@@ -1,11 +1,12 @@
 version: "3.8"
 services:
   web:
-    container_name: next_app
+    container_name: graphql_front
     build: ./front
     tty: true # コンテナを起動させ続ける
     volumes:
-      - ./front:/front
+      - ./front:/app
+    working_dir: /app
     environment:
       TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
     command: sh -c 'yarn && yarn dev'
@@ -13,14 +14,15 @@ services:
       - 80:3000
 
   server:
-    container_name: express_app
+    container_name: graphql_server
     build: ./server
     tty: true
     depends_on:
       - db
     volumes: # ローカルとコンテナのパスをマウント
-      - ./server:/server
+      - ./server:/app
       - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
+    working_dir: /app
     environment:
       TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
     command: sh -c 'yarn && yarn start'
@@ -30,7 +32,7 @@ services:
       - seccomp:unconfined
 
   db:
-    container_name: express_db
+    container_name: graphql_db
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
@@ -40,10 +42,10 @@ services:
     image: mysql:5.7
     command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci
     volumes:
-      - express_data:/var/lib/mysql
+      - graphql_db_data:/var/lib/mysql
       - ./mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf
     ports:
       - 3306:3306
 
 volumes:
-  express_data:
+  graphql_db_data:
