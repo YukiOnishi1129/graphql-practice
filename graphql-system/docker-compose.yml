@@ -3,12 +3,14 @@ services:
   web:
     container_name: next_app
     build: ./front
-    tty: true
+    tty: true # コンテナを起動させ続ける
     volumes:
       - ./front:/front
+    environment:
+      TZ: Asia/Tokyo # タイムゾーンを日本時刻に設定
     command: sh -c 'yarn && yarn start'
     ports:
-      - 4000:4000
+      - 80:3000
 
   server:
     container_name: express_app
@@ -16,7 +18,7 @@ services:
     tty: true
     depends_on:
       - db
-    volumes:
+    volumes: # ローカルとコンテナのパスをマウント
       - ./server:/server
       - /etc/localtime:/etc/localtime:ro # タイムゾーンを日本時刻に設定
     environment:

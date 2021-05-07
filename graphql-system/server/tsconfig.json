@@ -1,0 +1,30 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "outDir": "./dist",
+    "strict": true,
+    "moduleResolution": "node",
+    "baseUrl": "./",
+    "paths": {
+      // "@Types/*": ["src/@types/*"],
+      // "@Models/*": ["src/models/*"],
+      // "@Jobs/*": ["src/jobs/*"],
+      // "@Api/*": ["src/api/*"],
+      // "@Seeders/*": ["src/db/seeders/init/*"],
+      // "@Configs/*": ["src/config/*"],
+      // "@Consts/*": ["src/constants/*"],
+      // "@Logs/*": ["src/log/*"],
+      // "@Libs/*": ["src/lib/*"],
+      // "@Routes/*": ["src/routes/*"],
+      // "@Logics/*": ["src/logic/*"]
+    },
+    "types": ["@types/node", "@types/express", "@types/jest"],
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["./src/**/*"]
+}
