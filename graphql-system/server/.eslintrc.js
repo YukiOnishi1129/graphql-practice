@@ -18,5 +18,22 @@ module.exports = {
   rules: {
     "prettier/prettier": ["error"],
     "no-inferrable-types": 0,
+    "@typescript-eslint/ban-types": [
+      // https://www.javaer101.com/en/article/53004069.html
+      "error",
+      {
+        types: {
+          String: false,
+          Boolean: false,
+          Number: false,
+          Symbol: false,
+          "{}": false,
+          Object: false,
+          object: false,
+          Function: false,
+        },
+        extendDefaults: true,
+      },
+    ],
   },
 };
