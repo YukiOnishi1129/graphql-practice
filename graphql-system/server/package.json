@@ -6,7 +6,7 @@
   "scripts": {
     "tsc": "tsc",
     "ts-node": "ts-node",
-    "start": "ts-node ./src/index.ts",
+    "start": "nodemon ./src/index.ts",
     "watch": "ts-node-dev ./src/index.ts",
     "lint": "eslint --ext '.js,.ts' ./src/**",
     "lint-fix": "eslint --fix --ext '.js,.ts' ./src/**",
@@ -42,6 +42,7 @@
     "eslint-plugin-prettier": "^3.3.0",
     "graphql-tools": "^7.0.4",
     "jest": "^26.6.3",
+    "nodemon": "^2.0.7",
     "prettier": "^2.2.1",
     "sinon": "^9.2.4",
     "sinon-express-mock": "^2.2.1",
@@ -52,12 +53,14 @@
     "typescript": "^4.1.3"
   },
   "dependencies": {
+    "apollo-server-express": "^2.24.0",
     "axios": "^0.21.1",
     "body-parser": "^1.19.0",
     "dayjs": "^1.10.4",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
     "graphql": "^15.5.0",
+    "graphql-import-node": "^0.0.4",
     "lodash": "^4.17.21",
     "log4js": "^6.3.0",
     "module-alias": "^2.2.2",
