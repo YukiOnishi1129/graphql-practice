@@ -11,11 +11,20 @@
     "lint": "eslint --ext '.js,.ts' ./src/**",
     "lint-fix": "eslint --fix --ext '.js,.ts' ./src/**",
     "generate": "graphql-codegen --config codegen.yml",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "create:model": "ts-node ./node_modules/.bin/typeorm entity:create --name",
+    "db:migration:generate": "ts-node ./node_modules/.bin/typeorm migration:generate --name",
+    "db:migration:run": "ts-node ./node_modules/.bin/typeorm migration:run",
+    "db:migration:revert": "ts-node ./node_modules/.bin/typeorm migration:revert",
+    "db:schema:drop": "ts-node ./node_modules/.bin/typeorm schema:drop"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
+  "_moduleAliases": {
+    "@Types": "src/types/*",
+    "@Models": "src/models"
+  },
   "devDependencies": {
     "@babel/core": "^7.12.10",
     "@babel/preset-env": "^7.12.11",

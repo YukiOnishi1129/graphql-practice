@@ -1,6 +1,7 @@
 require("module-alias/register");
 // require("dotenv").config();
 import express from "express";
+import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 /* schema */
 import schema from "./graphql/schemasMap";
