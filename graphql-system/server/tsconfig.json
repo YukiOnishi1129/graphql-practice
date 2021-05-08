@@ -8,8 +8,8 @@
     "baseUrl": "./",
     "paths": {
       "@Types/*": ["src/types/*"],
-      "@Models/*": ["src/models/*"]
-      // "@Jobs/*": ["src/jobs/*"],
+      "@Models/*": ["src/models/*"],
+      "@Utils/*": ["src/utils/*"]
       // "@Api/*": ["src/api/*"],
       // "@Seeders/*": ["src/db/seeders/init/*"],
       // "@Configs/*": ["src/config/*"],

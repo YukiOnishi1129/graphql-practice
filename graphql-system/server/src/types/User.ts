@@ -11,5 +11,5 @@ export interface UserType {
   avatar: string;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
-  deleteFlg: boolean;
+  deleteFlg?: boolean;
 }

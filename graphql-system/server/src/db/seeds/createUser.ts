@@ -19,11 +19,11 @@ export default class CreateUsers implements Seeder {
     // const result = await bcrypt.compare("password", hashPassword);
     // console.log("判定");
     // console.log(result);
-
     await connection
       .createQueryBuilder()
       .insert()
       .into(User)
+      // TODO: 仮設定
       .values([
         {
           name: "Timber",
@@ -31,7 +31,22 @@ export default class CreateUsers implements Seeder {
           password: hashPassword,
           avatar: "",
         },
+        {
+          name: "bake",
+          email: "bake@gmail.com",
+          password: hashPassword,
+          avatar: "",
+        },
+        {
+          name: "kenny",
+          email: "kenny@gmail.com",
+          password: hashPassword,
+          avatar: "",
+        },
       ])
       .execute();
+
+    // factoryを使った自動生成
+    // await factory(User)().createMany(10);
   }
 }

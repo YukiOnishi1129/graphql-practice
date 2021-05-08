@@ -20,16 +20,16 @@ export class User implements UserType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
 
-  @Column("varchar", { name: "name", length: "255", unique: true })
+  @Column("varchar", { name: "name", length: "255" })
   public name!: string;
 
   @Column("varchar", { name: "email", length: "255", unique: true })
   public email!: string;
 
-  @Column("varchar", { name: "password", length: "255", unique: true })
+  @Column("varchar", { name: "password", length: "255" })
   public password!: string;
 
-  @Column("varchar", { name: "avatar", length: "255", unique: true })
+  @Column("varchar", { name: "avatar", length: "255" })
   public avatar!: string;
 
   @CreateDateColumn({ name: "created_at" })
