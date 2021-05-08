@@ -1,0 +1,22 @@
+extend type Query {
+  chat: Chat!
+}
+
+# extend type Mutation {
+
+# }
+
+type Chat {
+  id: Int!
+  friend: User!
+  userId: Int!
+  statement: [Statement!]!
+  createdAt: DateTime!
+}
+
+type Statement {
+  id: Int!
+  user: User!
+  statement: String!
+  createdAt: DateTime!
+}

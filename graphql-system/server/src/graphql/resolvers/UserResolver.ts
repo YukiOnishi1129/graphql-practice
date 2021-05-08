@@ -6,6 +6,7 @@ import {
   QueryLoginArgs,
   User,
   FriendShip,
+  AllUser,
 } from "../generated";
 
 export const UserResolvers: IResolvers = {
@@ -24,17 +25,7 @@ export const UserResolvers: IResolvers = {
           createdAt: new Date(),
         },
       ];
-      // const friendShip: FriendShip = {
-      //   user: {
-      //     id: 2,
-      //     name: "ジロー",
-      //     email: "test@gamail.com",
-      //     avatar: "",
-      //     createdAt: new Date(),
-      //     friends: [],
-      //   },
-      //   createdAt: new Date(),
-      // };
+
       return {
         id: 1,
         name: "タロー",
@@ -43,6 +34,26 @@ export const UserResolvers: IResolvers = {
         createdAt: new Date(),
         friends: friendShips,
       };
+    },
+    async allUsers(): Promise<AllUser[]> {
+      return [
+        {
+          id: 1,
+          name: "タロー",
+          email: "test@gmail.com",
+          avatar: "",
+          friendFlg: true,
+          createdAt: new Date(),
+        },
+        {
+          id: 2,
+          name: "ジロー",
+          email: "test@gmail.com",
+          avatar: "",
+          friendFlg: false,
+          createdAt: new Date(),
+        },
+      ];
     },
     async login(_: void, args: QueryLoginArgs): Promise<AuthenticateResponse> {
       return {
