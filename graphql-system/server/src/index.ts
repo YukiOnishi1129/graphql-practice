@@ -5,25 +5,29 @@ import { ApolloServer } from "apollo-server-express";
 /* schema */
 import schema from "./graphql/schemasMap";
 
-const app = express();
-const PORT = {
-  port: 4000,
-};
+async function start() {
+  const app = express();
+  const PORT = {
+    port: 4000,
+  };
 
-// app.get("/", (req, res) => {
-//   res.send("Hello, World!");
-// });
+  // app.get("/", (req, res) => {
+  //   res.send("Hello, World!");
+  // });
 
-const server = new ApolloServer({
-  schema,
-});
+  const server = new ApolloServer({
+    schema,
+  });
 
-server.applyMiddleware({ app });
+  server.applyMiddleware({ app });
 
-app.listen(PORT, () => {
-  console.log(
-    `\n🚀    GraphQL is now running on http://localhost:${PORT}/graphql`
-  );
-});
+  app.listen(PORT, () => {
+    console.log(
+      `\n🚀    GraphQL is now running on http://localhost:${PORT}/graphql`
+    );
+  });
+}
+
+start();
 
 // export default app;

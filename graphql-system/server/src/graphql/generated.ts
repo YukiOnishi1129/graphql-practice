@@ -1,4 +1,8 @@
-import { GraphQLResolveInfo } from "graphql";
+import {
+  GraphQLResolveInfo,
+  GraphQLScalarType,
+  GraphQLScalarTypeConfig,
+} from "graphql";
 export type Maybe<T> = T | null;
 export type Exact<T extends { [key: string]: unknown }> = {
   [K in keyof T]: T[K];
@@ -18,6 +22,18 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  DateTime: any;
+};
+
+/** ユーザー管理画面に表示させるユーザー一覧 */
+export type AllUser = {
+  __typename?: "AllUser";
+  id: Scalars["Int"];
+  name: Scalars["String"];
+  email: Scalars["String"];
+  avatar: Scalars["String"];
+  friendFlg: Scalars["Boolean"];
+  createdAt: Scalars["DateTime"];
 };
 
 export type AuthenticateResponse = {
@@ -25,8 +41,25 @@ export type AuthenticateResponse = {
   token: Scalars["String"];
 };
 
+export type Chat = {
+  __typename?: "Chat";
+  id: Scalars["Int"];
+  friend: User;
+  userId: Scalars["Int"];
+  statement: Array<Statement>;
+  createdAt: Scalars["DateTime"];
+};
+
+/** 友達のユーザー */
+export type FriendShip = {
+  __typename?: "FriendShip";
+  user: User;
+  createdAt: Scalars["DateTime"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
+  _empty?: Maybe<Scalars["String"]>;
   register: AuthenticateResponse;
 };
 
@@ -37,12 +70,35 @@ export type MutationRegisterArgs = {
 
 export type Query = {
   __typename?: "Query";
+  _empty?: Maybe<Scalars["String"]>;
+  allUsers: Array<AllUser>;
+  chat: Chat;
   login: AuthenticateResponse;
+  me: User;
 };
 
 export type QueryLoginArgs = {
   email: Scalars["String"];
   password: Scalars["String"];
+};
+
+export type Statement = {
+  __typename?: "Statement";
+  id: Scalars["Int"];
+  user: User;
+  content: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+};
+
+/** ユーザー */
+export type User = {
+  __typename?: "User";
+  id: Scalars["Int"];
+  name: Scalars["String"];
+  email: Scalars["String"];
+  avatar: Scalars["String"];
+  createdAt: Scalars["DateTime"];
+  friends: Array<FriendShip>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -161,20 +217,47 @@ export type DirectiveResolverFn<
 
 /** Mapping between all available schema types and the resolvers types */
 export type ResolversTypes = {
-  AuthenticateResponse: ResolverTypeWrapper<AuthenticateResponse>;
+  AllUser: ResolverTypeWrapper<AllUser>;
+  Int: ResolverTypeWrapper<Scalars["Int"]>;
   String: ResolverTypeWrapper<Scalars["String"]>;
+  Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  AuthenticateResponse: ResolverTypeWrapper<AuthenticateResponse>;
+  Chat: ResolverTypeWrapper<Chat>;
+  DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
+  FriendShip: ResolverTypeWrapper<FriendShip>;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
-  Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
+  Statement: ResolverTypeWrapper<Statement>;
+  User: ResolverTypeWrapper<User>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
 export type ResolversParentTypes = {
-  AuthenticateResponse: AuthenticateResponse;
+  AllUser: AllUser;
+  Int: Scalars["Int"];
   String: Scalars["String"];
+  Boolean: Scalars["Boolean"];
+  AuthenticateResponse: AuthenticateResponse;
+  Chat: Chat;
+  DateTime: Scalars["DateTime"];
+  FriendShip: FriendShip;
   Mutation: {};
   Query: {};
-  Boolean: Scalars["Boolean"];
+  Statement: Statement;
+  User: User;
+};
+
+export type AllUserResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["AllUser"] = ResolversParentTypes["AllUser"]
+> = {
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  friendFlg?: Resolver<ResolversTypes["Boolean"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type AuthenticateResponseResolvers<
@@ -185,10 +268,41 @@ export type AuthenticateResponseResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type ChatResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Chat"] = ResolversParentTypes["Chat"]
+> = {
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  friend?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  userId?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  statement?: Resolver<
+    Array<ResolversTypes["Statement"]>,
+    ParentType,
+    ContextType
+  >;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export interface DateTimeScalarConfig
+  extends GraphQLScalarTypeConfig<ResolversTypes["DateTime"], any> {
+  name: "DateTime";
+}
+
+export type FriendShipResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["FriendShip"] = ResolversParentTypes["FriendShip"]
+> = {
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type MutationResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = {
+  _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   register?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
@@ -201,18 +315,60 @@ export type QueryResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = {
+  _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  allUsers?: Resolver<
+    Array<ResolversTypes["AllUser"]>,
+    ParentType,
+    ContextType
+  >;
+  chat?: Resolver<ResolversTypes["Chat"], ParentType, ContextType>;
   login?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
     ContextType,
     RequireFields<QueryLoginArgs, "email" | "password">
   >;
+  me?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+};
+
+export type StatementResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["Statement"] = ResolversParentTypes["Statement"]
+> = {
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
+  content?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
+export type UserResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
+> = {
+  id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
+  name?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  email?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  avatar?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
+  friends?: Resolver<
+    Array<ResolversTypes["FriendShip"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
 export type Resolvers<ContextType = any> = {
+  AllUser?: AllUserResolvers<ContextType>;
   AuthenticateResponse?: AuthenticateResponseResolvers<ContextType>;
+  Chat?: ChatResolvers<ContextType>;
+  DateTime?: GraphQLScalarType;
+  FriendShip?: FriendShipResolvers<ContextType>;
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
+  Statement?: StatementResolvers<ContextType>;
+  User?: UserResolvers<ContextType>;
 };
 
 /**

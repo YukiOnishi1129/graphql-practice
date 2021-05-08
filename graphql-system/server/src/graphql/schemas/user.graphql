@@ -1,4 +1,6 @@
 extend type Query {
+  me: User!
+  allUsers: [AllUser!]!
   login(email: String!, password: String!): AuthenticateResponse!
 }
 
@@ -8,4 +10,36 @@ extend type Mutation {
 
 type AuthenticateResponse {
   token: String!
+}
+
+"""
+ユーザー
+"""
+type User {
+  id: Int!
+  name: String!
+  email: String!
+  avatar: String!
+  createdAt: DateTime!
+  friends: [FriendShip!]!
+}
+
+"""
+友達のユーザー
+"""
+type FriendShip {
+  user: User!
+  createdAt: DateTime!
+}
+
+"""
+ユーザー管理画面に表示させるユーザー一覧
+"""
+type AllUser {
+  id: Int!
+  name: String!
+  email: String!
+  avatar: String!
+  friendFlg: Boolean!
+  createdAt: DateTime!
 }
