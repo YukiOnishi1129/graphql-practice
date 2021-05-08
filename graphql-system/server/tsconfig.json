@@ -7,8 +7,8 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
-      "@Types/*": ["src/types/*"]
-      // "@Models/*": ["src/models/*"],
+      "@Types/*": ["src/types/*"],
+      "@Models/*": ["src/models/*"]
       // "@Jobs/*": ["src/jobs/*"],
       // "@Api/*": ["src/api/*"],
       // "@Seeders/*": ["src/db/seeders/init/*"],
