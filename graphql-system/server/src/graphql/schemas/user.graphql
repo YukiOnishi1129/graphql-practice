@@ -12,6 +12,9 @@ type AuthenticateResponse {
   token: String!
 }
 
+"""
+ユーザー
+"""
 type User {
   id: Int!
   name: String!
@@ -21,6 +24,9 @@ type User {
   friends: [FriendShip!]!
 }
 
+"""
+友達のユーザー
+"""
 type FriendShip {
   user: User!
   createdAt: DateTime!

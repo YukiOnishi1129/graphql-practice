@@ -50,6 +50,7 @@ export type Chat = {
   createdAt: Scalars["DateTime"];
 };
 
+/** 友達のユーザー */
 export type FriendShip = {
   __typename?: "FriendShip";
   user: User;
@@ -85,10 +86,11 @@ export type Statement = {
   __typename?: "Statement";
   id: Scalars["Int"];
   user: User;
-  statement: Scalars["String"];
+  content: Scalars["String"];
   createdAt: Scalars["DateTime"];
 };
 
+/** ユーザー */
 export type User = {
   __typename?: "User";
   id: Scalars["Int"];
@@ -335,7 +337,7 @@ export type StatementResolvers<
 > = {
   id?: Resolver<ResolversTypes["Int"], ParentType, ContextType>;
   user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
-  statement?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
+  content?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   createdAt?: Resolver<ResolversTypes["DateTime"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

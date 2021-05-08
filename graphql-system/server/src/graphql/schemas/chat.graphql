@@ -17,6 +17,6 @@ type Chat {
 type Statement {
   id: Int!
   user: User!
-  statement: String!
+  content: String!
   createdAt: DateTime!
 }
