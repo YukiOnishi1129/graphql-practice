@@ -1,19 +1,19 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
-  PrimaryColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
-  ManyToMany,
 } from "typeorm";
 /* models */
 import { User } from "./User";
+/* types */
+import { FriendShipType } from "@Types/FriendShip";
 
 @Entity("friend_ship")
-export class FriendShip {
+export class FriendShip implements FriendShipType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
 
