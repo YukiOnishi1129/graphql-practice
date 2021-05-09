@@ -19,7 +19,8 @@
     "db:schema:drop": "ts-node ./node_modules/.bin/typeorm schema:drop",
     "seed:config": "ts-node ./node_modules/typeorm-seeding/dist/cli.js config",
     "seed:run": "ts-node ./node_modules/typeorm-seeding/dist/cli.js seed",
-    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync"
+    "schema:sync": "ts-node ./node_modules/typeorm/cli.js schema:sync",
+    "test:command": "ts-node ./src/utils/test.ts"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,8 @@
   "_moduleAliases": {
     "@Types": "src/types/*",
     "@Models": "src/models",
+    "@Services": "src/services",
+    "@Constants/*": "src/constants",
     "@Utils/*": "src/utils/"
   },
   "devDependencies": {
