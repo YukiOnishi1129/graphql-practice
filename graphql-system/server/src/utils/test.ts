@@ -4,13 +4,16 @@
  */
 require("module-alias/register");
 /* Services */
-import { getMyUser } from "@Services/User";
+import { getMyUser, getMyUserRelation } from "@Services/User";
+import { getFriendShipByUserId } from "@Services/FriendShip";
 
 const fetch = async () => {
-  const data = await getMyUser(1);
+  // const data = await getMyUser(1);
+  // const data = await getMyUserRelation(1);
 
-  console.log("データ");
-  console.log(data);
+  // console.log("データ");
+  // console.log(data);
+  await getFriendShipByUserId(1);
 };
 
 fetch();

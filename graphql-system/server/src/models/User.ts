@@ -10,8 +10,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   ManyToOne,
+  OneToMany,
+  OneToOne,
   JoinColumn,
 } from "typeorm";
+/* models */
+import { FriendShip } from "./index";
 /* types */
 import { UserType } from "@Types/User";
 
@@ -40,4 +44,11 @@ export class User implements UserType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
+
+  @OneToMany(() => FriendShip, (friendships) => friendships.user)
+  // @JoinColumn({ name: "id" })
+  friendships!: FriendShip[];
+
+  @OneToOne(() => FriendShip, (friendUser) => friendUser.friend)
+  friendUser!: FriendShip;
 }

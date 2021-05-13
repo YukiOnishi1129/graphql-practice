@@ -8,31 +8,27 @@ import {
   FriendShip,
   AllUser,
 } from "../generated";
+/* services */
+import { getMyUser } from "@Services/User";
+import { getFriendShipByUserId } from "@Services/FriendShip";
 
 export const UserResolvers: IResolvers = {
   Query: {
-    async me(): Promise<User> {
-      const friendShips: FriendShip[] = [
-        {
-          user: {
-            id: 1,
-            name: "タロー",
-            email: "test@gmail.com",
-            avatar: "image.jpeg",
-            createdAt: new Date(),
-            friends: [],
-          },
-          createdAt: new Date(),
-        },
-      ];
+    async me(): Promise<User | undefined> {
+      const user = await getMyUser(1);
+      const friends = await getFriendShipByUserId(1);
+
+      if (!user) {
+        return;
+      }
 
       return {
-        id: 1,
-        name: "タロー",
-        email: "test@gmail.com",
-        avatar: "image.jpeg",
-        createdAt: new Date(),
-        friends: friendShips,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatar: user.avatar,
+        createdAt: user.createdAt,
+        friends: friends,
       };
     },
     async allUsers(): Promise<AllUser[]> {

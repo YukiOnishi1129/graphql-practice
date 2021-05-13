@@ -6,13 +6,14 @@ import {
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
+  OneToOne,
 } from "typeorm";
 /* models */
-import { User } from "./User";
+import { User } from "./index";
 /* types */
 import { FriendShipType } from "@Types/FriendShip";
 
-@Entity("friend_ship")
+@Entity("friendship")
 export class FriendShip implements FriendShipType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
@@ -20,14 +21,14 @@ export class FriendShip implements FriendShipType {
   @Column({ name: "user_id" })
   userId!: number;
 
-  @ManyToOne(() => User, (user) => user.id)
+  @ManyToOne(() => User, (user) => user.friendships)
   @JoinColumn({ name: "user_id" })
   user!: User;
 
   @Column({ name: "friend_user_id" })
   friendUserId!: number;
 
-  @ManyToOne(() => User, (friend) => friend.id)
+  @ManyToOne(() => User, (friend) => friend.friendUser)
   @JoinColumn({ name: "friend_user_id" })
   friend!: User;
 

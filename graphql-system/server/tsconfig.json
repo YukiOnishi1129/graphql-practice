@@ -7,6 +7,7 @@
     "moduleResolution": "node",
     "baseUrl": "./",
     "paths": {
+      "@GraphQL/*": ["src/graphql/*"],
       "@Types/*": ["src/types/*"],
       "@Models/*": ["src/models/*"],
       "@Services/*": ["src/services/*"],
