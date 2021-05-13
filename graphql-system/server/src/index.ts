@@ -1,15 +1,14 @@
 require("module-alias/register");
 // require("dotenv").config();
 import express from "express";
+import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 /* schema */
 import schema from "./graphql/schemasMap";
 
 async function start() {
   const app = express();
-  const PORT = {
-    port: 4000,
-  };
+  const PORT = 4000;
 
   // app.get("/", (req, res) => {
   //   res.send("Hello, World!");

@@ -26,3 +26,5 @@ docker exec -it graphql_server sh
 
 // mysql コンテナにアクセス
 docker exec -it graphql_db mysql -u root -p
+
+docker exec -it graphql_db mysql -u graphqluser -p
