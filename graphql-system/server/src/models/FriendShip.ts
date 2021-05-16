@@ -6,7 +6,6 @@ import {
   UpdateDateColumn,
   JoinColumn,
   ManyToOne,
-  OneToOne,
 } from "typeorm";
 /* models */
 import { User } from "./index";
