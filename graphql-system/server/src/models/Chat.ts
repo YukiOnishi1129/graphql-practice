@@ -13,7 +13,7 @@ import {
   UpdateDateColumn,
 } from "typeorm";
 /* models */
-import { User, Statement } from "./index";
+import { User, ChatStatementRelations } from "./index";
 /* types */
 import { ChatType } from "@Types/Chat";
 
@@ -45,6 +45,6 @@ export class Chat implements ChatType {
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
 
-  @OneToMany(() => Statement, (stateChat) => stateChat.chatStatement)
-  stateChat!: Statement;
+  @OneToMany(() => ChatStatementRelations, (relation) => relation.chat)
+  relation!: ChatStatementRelations;
 }

@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from "typeorm";
 
-export class table1621259658297 implements MigrationInterface {
-  name = "table1621259658297";
+export class table1621262339930 implements MigrationInterface {
+  name = "table1621262339930";
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -11,7 +11,10 @@ export class table1621259658297 implements MigrationInterface {
       "CREATE TABLE `friendship` (`id` int NOT NULL AUTO_INCREMENT, `user_id` int NOT NULL, `friend_user_id` int NOT NULL, `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `delete_flg` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (`id`)) ENGINE=InnoDB"
     );
     await queryRunner.query(
-      "CREATE TABLE `statements` (`id` int NOT NULL AUTO_INCREMENT, `chat_id` int NOT NULL, `user_id` int NOT NULL, `content` varchar(255) NOT NULL, `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `delete_flg` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+      "CREATE TABLE `statements` (`id` int NOT NULL AUTO_INCREMENT, `user_id` int NOT NULL, `content` varchar(255) NOT NULL, `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `delete_flg` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (`id`)) ENGINE=InnoDB"
+    );
+    await queryRunner.query(
+      "CREATE TABLE `chat_statement_relations` (`id` int NOT NULL AUTO_INCREMENT, `chat_id` int NOT NULL, `statement_id` int NOT NULL, `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `delete_flg` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (`id`)) ENGINE=InnoDB"
     );
     await queryRunner.query(
       "CREATE TABLE `chats` (`id` int NOT NULL AUTO_INCREMENT, `user_id` int NOT NULL, `friend_user_id` int NOT NULL, `created_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6), `updated_at` datetime(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6), `delete_flg` tinyint NOT NULL DEFAULT 0, PRIMARY KEY (`id`)) ENGINE=InnoDB"
@@ -23,10 +26,13 @@ export class table1621259658297 implements MigrationInterface {
       "ALTER TABLE `friendship` ADD CONSTRAINT `FK_19bf8f330a4e7a05c70c54d2e31` FOREIGN KEY (`friend_user_id`) REFERENCES `users`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
     );
     await queryRunner.query(
-      "ALTER TABLE `statements` ADD CONSTRAINT `FK_29bbbc0acee5f14586d57ccd7ec` FOREIGN KEY (`chat_id`) REFERENCES `chats`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+      "ALTER TABLE `statements` ADD CONSTRAINT `FK_da838838004c4ff8990e7b4de9a` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
     );
     await queryRunner.query(
-      "ALTER TABLE `statements` ADD CONSTRAINT `FK_da838838004c4ff8990e7b4de9a` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+      "ALTER TABLE `chat_statement_relations` ADD CONSTRAINT `FK_252a65e8f253b4723b27c33f398` FOREIGN KEY (`chat_id`) REFERENCES `chats`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
+    );
+    await queryRunner.query(
+      "ALTER TABLE `chat_statement_relations` ADD CONSTRAINT `FK_cee5c55d45a24d51b65e7cdcb7a` FOREIGN KEY (`statement_id`) REFERENCES `statements`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
     );
     await queryRunner.query(
       "ALTER TABLE `chats` ADD CONSTRAINT `FK_b6c92d818d42e3e298e84d94414` FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE NO ACTION ON UPDATE NO ACTION"
@@ -44,10 +50,13 @@ export class table1621259658297 implements MigrationInterface {
       "ALTER TABLE `chats` DROP FOREIGN KEY `FK_b6c92d818d42e3e298e84d94414`"
     );
     await queryRunner.query(
-      "ALTER TABLE `statements` DROP FOREIGN KEY `FK_da838838004c4ff8990e7b4de9a`"
+      "ALTER TABLE `chat_statement_relations` DROP FOREIGN KEY `FK_cee5c55d45a24d51b65e7cdcb7a`"
     );
     await queryRunner.query(
-      "ALTER TABLE `statements` DROP FOREIGN KEY `FK_29bbbc0acee5f14586d57ccd7ec`"
+      "ALTER TABLE `chat_statement_relations` DROP FOREIGN KEY `FK_252a65e8f253b4723b27c33f398`"
+    );
+    await queryRunner.query(
+      "ALTER TABLE `statements` DROP FOREIGN KEY `FK_da838838004c4ff8990e7b4de9a`"
     );
     await queryRunner.query(
       "ALTER TABLE `friendship` DROP FOREIGN KEY `FK_19bf8f330a4e7a05c70c54d2e31`"
@@ -56,6 +65,7 @@ export class table1621259658297 implements MigrationInterface {
       "ALTER TABLE `friendship` DROP FOREIGN KEY `FK_8885973a7c761a7f8fc0fc673f6`"
     );
     await queryRunner.query("DROP TABLE `chats`");
+    await queryRunner.query("DROP TABLE `chat_statement_relations`");
     await queryRunner.query("DROP TABLE `statements`");
     await queryRunner.query("DROP TABLE `friendship`");
     await queryRunner.query(

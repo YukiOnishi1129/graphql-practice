@@ -6,13 +6,14 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  OneToMany,
   ManyToOne,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
 } from "typeorm";
 /* models */
-import { User, Chat } from "./index";
+import { User, ChatStatementRelations } from "./index";
 /* types */
 import { StatementType } from "@Types/Statement";
 
@@ -20,13 +21,6 @@ import { StatementType } from "@Types/Statement";
 export class Statement implements StatementType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
-
-  @Column({ name: "chat_id" })
-  chatId!: number;
-
-  @ManyToOne(() => Chat, (chatStatement) => chatStatement.stateChat)
-  @JoinColumn({ name: "chat_id" })
-  chatStatement!: Chat;
 
   @Column({ name: "user_id" })
   userId!: number;
@@ -46,4 +40,7 @@ export class Statement implements StatementType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
+
+  @OneToMany(() => ChatStatementRelations, (relation) => relation.statement)
+  relation!: ChatStatementRelations;
 }

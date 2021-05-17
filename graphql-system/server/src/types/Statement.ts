@@ -8,7 +8,6 @@
  */
 export interface StatementType {
   readonly id: number;
-  chatId: number;
   userId: number;
   content: string;
   readonly createdAt?: Date;
