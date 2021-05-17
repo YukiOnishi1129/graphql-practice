@@ -9,10 +9,8 @@ import {
   UpdateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
-  ManyToOne,
   OneToMany,
   OneToOne,
-  JoinColumn,
 } from "typeorm";
 /* models */
 import { FriendShip } from "./index";
@@ -46,8 +44,7 @@ export class User implements UserType {
   public deleteFlg!: boolean;
 
   @OneToMany(() => FriendShip, (friendships) => friendships.user)
-  // @JoinColumn({ name: "id" })
-  friendships!: FriendShip[];
+  friendships!: FriendShip;
 
   @OneToOne(() => FriendShip, (friendUser) => friendUser.friend)
   friendUser!: FriendShip;

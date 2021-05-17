@@ -1,23 +1,23 @@
 /**
- * FriendShip
+ * Chat
  * @package model
  */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
-  ManyToOne,
 } from "typeorm";
 /* models */
-import { User } from "./index";
+import { User, Statement } from "./index";
 /* types */
-import { FriendShipType } from "@Types/FriendShip";
+import { ChatType } from "@Types/Chat";
 
-@Entity("friendship")
-export class FriendShip implements FriendShipType {
+@Entity("chats")
+export class Chat implements ChatType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
 
@@ -34,6 +34,13 @@ export class FriendShip implements FriendShipType {
   @ManyToOne(() => User, (friend) => friend.friendUser)
   @JoinColumn({ name: "friend_user_id" })
   friend!: User;
+
+  @Column({ name: "statement_id" })
+  statementId!: number;
+
+  @ManyToOne(() => Statement, (statement) => statement.chatStatement)
+  @JoinColumn({ name: "statement_id" })
+  statement!: Statement;
 
   @CreateDateColumn({ name: "created_at" })
   readonly createdAt?: Date;

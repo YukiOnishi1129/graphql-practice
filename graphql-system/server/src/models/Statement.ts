@@ -1,23 +1,24 @@
 /**
- * FriendShip
+ * Statement
  * @package model
  */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
-  ManyToOne,
 } from "typeorm";
 /* models */
-import { User } from "./index";
+import { User, Chat } from "./index";
 /* types */
-import { FriendShipType } from "@Types/FriendShip";
+import { StatementType } from "@Types/Statement";
 
-@Entity("friendship")
-export class FriendShip implements FriendShipType {
+@Entity("statement")
+export class Statement implements StatementType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
 
@@ -28,12 +29,8 @@ export class FriendShip implements FriendShipType {
   @JoinColumn({ name: "user_id" })
   user!: User;
 
-  @Column({ name: "friend_user_id" })
-  friendUserId!: number;
-
-  @ManyToOne(() => User, (friend) => friend.friendUser)
-  @JoinColumn({ name: "friend_user_id" })
-  friend!: User;
+  @Column({ name: "content" })
+  content!: string;
 
   @CreateDateColumn({ name: "created_at" })
   readonly createdAt?: Date;
@@ -43,4 +40,7 @@ export class FriendShip implements FriendShipType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
+
+  @OneToMany(() => Chat, (chatStatement) => chatStatement.statement)
+  chatStatement!: Chat;
 }
