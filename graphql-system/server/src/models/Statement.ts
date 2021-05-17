@@ -7,7 +7,6 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
-  OneToMany,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -17,10 +16,17 @@ import { User, Chat } from "./index";
 /* types */
 import { StatementType } from "@Types/Statement";
 
-@Entity("statement")
+@Entity("statements")
 export class Statement implements StatementType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
+
+  @Column({ name: "chat_id" })
+  chatId!: number;
+
+  @ManyToOne(() => Chat, (chatStatement) => chatStatement.stateChat)
+  @JoinColumn({ name: "chat_id" })
+  chatStatement!: Chat;
 
   @Column({ name: "user_id" })
   userId!: number;
@@ -40,7 +46,4 @@ export class Statement implements StatementType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
-
-  @OneToMany(() => Chat, (chatStatement) => chatStatement.statement)
-  chatStatement!: Chat;
 }

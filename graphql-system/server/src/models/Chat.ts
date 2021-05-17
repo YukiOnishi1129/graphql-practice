@@ -7,6 +7,7 @@ import {
   PrimaryGeneratedColumn,
   Column,
   ManyToOne,
+  OneToMany,
   JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
@@ -35,13 +36,6 @@ export class Chat implements ChatType {
   @JoinColumn({ name: "friend_user_id" })
   friend!: User;
 
-  @Column({ name: "statement_id" })
-  statementId!: number;
-
-  @ManyToOne(() => Statement, (statement) => statement.chatStatement)
-  @JoinColumn({ name: "statement_id" })
-  statement!: Statement;
-
   @CreateDateColumn({ name: "created_at" })
   readonly createdAt?: Date;
 
@@ -50,4 +44,7 @@ export class Chat implements ChatType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
+
+  @OneToMany(() => Statement, (stateChat) => stateChat.chatStatement)
+  stateChat!: Statement;
 }
