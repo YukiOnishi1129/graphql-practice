@@ -1,45 +1,40 @@
 /**
- * CreateChat
+ * CreateStatement
  * @package DB
  */
 require("module-alias/register");
 import { Factory, Seeder } from "typeorm-seeding";
 import { Connection } from "typeorm";
 /* models */
-import { Chat } from "@Models/index";
+import { Statement } from "@Models/index";
 /* types */
-import { ChatType } from "@Types/Chat";
+import { StatementType } from "@Types/index";
 
-export default class CreateChat implements Seeder {
+export default class CreateStatement implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
-    const chatInitState: ChatType[] = [
+    const statementInitState: StatementType[] = [
       {
         id: 1,
         userId: 1,
-        friendUserId: 2,
+        content: "おはよう",
       },
       {
         id: 2,
         userId: 2,
-        friendUserId: 1,
+        content: "よ！",
       },
       {
         id: 3,
-        userId: 1,
-        friendUserId: 3,
-      },
-      {
-        id: 4,
         userId: 3,
-        friendUserId: 1,
+        content: "ごきげんよう",
       },
     ];
 
     await connection
       .createQueryBuilder()
       .insert()
-      .into(Chat)
-      .values(chatInitState)
+      .into(Statement)
+      .values(statementInitState)
       .execute();
   }
 }

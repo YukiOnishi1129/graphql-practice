@@ -7,7 +7,7 @@ import { Factory, Seeder } from "typeorm-seeding";
 import { Connection } from "typeorm";
 import bcrypt from "bcrypt";
 /* models */
-import { User } from "@Models/User";
+import { User } from "@Models/index";
 
 /**
  * CreateUsers
