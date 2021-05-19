@@ -7,8 +7,8 @@ import {
   AuthenticateResponse,
   MutationRegisterArgs,
   QueryLoginArgs,
-  User,
-  AllUser,
+  User as UserGraphQLType,
+  AllUser as AllUserGraphQLType,
 } from "../generated";
 /* services */
 import { getMyUser, getAllUser } from "@Services/User";
@@ -23,7 +23,7 @@ export const UserResolvers: IResolvers = {
      * me
      * @returns
      */
-    async me(): Promise<User | undefined> {
+    async me(): Promise<UserGraphQLType | undefined> {
       // TODO: userIdは仮設定
       const user = await getMyUser(1);
       const friends = await getFriendShipByUserId(1);
@@ -46,14 +46,14 @@ export const UserResolvers: IResolvers = {
      * allUsers
      * @returns
      */
-    async allUsers(): Promise<AllUser[] | undefined> {
+    async allUsers(): Promise<AllUserGraphQLType[] | undefined> {
       // TODO: userIdは仮設定
       const users = await getAllUser(1);
 
       if (!users) {
         return;
       }
-      const allUsers: AllUser[] = [];
+      const allUsers: AllUserGraphQLType[] = [];
       for await (const user of users) {
         allUsers.push({
           id: user.id,
