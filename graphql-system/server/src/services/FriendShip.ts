@@ -3,22 +3,11 @@
  *  @package Services
  */
 require("module-alias/register");
-import { createConnection, getRepository, createQueryBuilder } from "typeorm";
+import { createConnection, getRepository } from "typeorm";
 /* graphQL */
-import {
-  FriendShip as FriendShipGraphQLType,
-  Scalars,
-} from "@GraphQL/generated";
+import { FriendShip as FriendShipGraphQLType } from "@GraphQL/generated";
 /* models */
-import { User, FriendShip } from "@Models/index";
-/* types */
-import { UserType } from "@Types/User";
-import { FriendShipType } from "@Types/FriendShip";
-
-interface Friend {
-  user: UserType;
-  createdAt?: Date;
-}
+import { FriendShip } from "@Models/index";
 
 /**
  * ユーザーに紐づく友達データを取得
@@ -35,6 +24,8 @@ export const getFriendShipByUserId = async (
     where: { userId: userId },
     relations: ["friend"],
   });
+
+  await connection.close();
 
   if (!friendShips.length) {
     return [];
@@ -55,7 +46,31 @@ export const getFriendShipByUserId = async (
     };
   });
 
+  return friends;
+};
+
+/**
+ * 条件にマッチしたfriendデータの有無確認
+ * @param userId
+ * @param friendUserId
+ * @returns
+ */
+export const isUserFriendship = async (
+  userId: number,
+  friendUserId: number
+): Promise<boolean> => {
+  const connection = await createConnection();
+  const friendRepository = getRepository(FriendShip);
+
+  const friendShips = await friendRepository.find({
+    where: { userId: userId, friendUserId: friendUserId },
+  });
+
   await connection.close();
 
-  return friends;
+  // 友人登録がない場合はfalse
+  if (!friendShips.length) {
+    return false;
+  }
+  return true;
 };

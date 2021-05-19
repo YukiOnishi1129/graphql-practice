@@ -1,20 +1,30 @@
+/**
+ * リゾルバ UserResolvers
+ * @package graphql
+ */
 import { IResolvers } from "graphql-tools";
-import { GraphQLScalarType } from "graphql";
 import {
   AuthenticateResponse,
   MutationRegisterArgs,
   QueryLoginArgs,
-  User,
-  FriendShip,
-  AllUser,
+  User as UserGraphQLType,
+  AllUser as AllUserGraphQLType,
 } from "../generated";
 /* services */
-import { getMyUser } from "@Services/User";
-import { getFriendShipByUserId } from "@Services/FriendShip";
+import { getMyUser, getAllUser } from "@Services/User";
+import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
 
+/**
+ * UserResolvers
+ */
 export const UserResolvers: IResolvers = {
   Query: {
-    async me(): Promise<User | undefined> {
+    /**
+     * me
+     * @returns
+     */
+    async me(): Promise<UserGraphQLType | undefined> {
+      // TODO: userIdは仮設定
       const user = await getMyUser(1);
       const friends = await getFriendShipByUserId(1);
 
@@ -31,26 +41,33 @@ export const UserResolvers: IResolvers = {
         friends: friends,
       };
     },
-    async allUsers(): Promise<AllUser[]> {
-      return [
-        {
-          id: 1,
-          name: "タロー",
-          email: "test@gmail.com",
-          avatar: "",
-          friendFlg: true,
-          createdAt: new Date(),
-        },
-        {
-          id: 2,
-          name: "ジロー",
-          email: "test@gmail.com",
-          avatar: "",
-          friendFlg: false,
-          createdAt: new Date(),
-        },
-      ];
+
+    /**
+     * allUsers
+     * @returns
+     */
+    async allUsers(): Promise<AllUserGraphQLType[] | undefined> {
+      // TODO: userIdは仮設定
+      const users = await getAllUser(1);
+
+      if (!users) {
+        return;
+      }
+      const allUsers: AllUserGraphQLType[] = [];
+      for await (const user of users) {
+        allUsers.push({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          friendFlg: await isUserFriendship(user.id, 1), // TODO: userIdは仮設定
+          createdAt: user.createdAt,
+        });
+      }
+
+      return allUsers;
     },
+
     async login(_: void, args: QueryLoginArgs): Promise<AuthenticateResponse> {
       return {
         token: "token",

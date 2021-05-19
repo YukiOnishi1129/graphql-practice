@@ -1,23 +1,24 @@
 /**
- * FriendShip
+ * Chat
  * @package model
  */
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
+  ManyToOne,
+  OneToMany,
+  JoinColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinColumn,
-  ManyToOne,
 } from "typeorm";
 /* models */
-import { User } from "./index";
+import { User, ChatStatementRelations } from "./index";
 /* types */
-import { FriendShipType } from "@Types/FriendShip";
+import { ChatType } from "@Types/Chat";
 
-@Entity("friendship")
-export class FriendShip implements FriendShipType {
+@Entity("chats")
+export class Chat implements ChatType {
   @PrimaryGeneratedColumn()
   readonly id!: number;
 
@@ -43,4 +44,7 @@ export class FriendShip implements FriendShipType {
 
   @Column({ name: "delete_flg", default: false })
   public deleteFlg!: boolean;
+
+  @OneToMany(() => ChatStatementRelations, (relation) => relation.chat)
+  relation!: ChatStatementRelations;
 }

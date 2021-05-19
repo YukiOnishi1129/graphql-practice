@@ -1,15 +1,15 @@
 /**
- * FriendShipType
+ * StatementType
  * @package Types
  */
 
 /**
- * FriendShipType
+ * StatementType
  */
-export interface FriendShipType {
+export interface StatementType {
   readonly id: number;
   userId: number;
-  friendUserId: number;
+  content: string;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
   deleteFlg?: boolean;

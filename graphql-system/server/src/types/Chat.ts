@@ -1,12 +1,12 @@
 /**
- * FriendShipType
- * @package Types
+ * ChatType
+ * @package types
  */
 
 /**
- * FriendShipType
+ * ChatType
  */
-export interface FriendShipType {
+export interface ChatType {
   readonly id: number;
   userId: number;
   friendUserId: number;

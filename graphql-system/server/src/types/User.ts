@@ -3,6 +3,9 @@
  * @package Types
  */
 
+/**
+ * UserType
+ */
 export interface UserType {
   readonly id: number;
   name: string;

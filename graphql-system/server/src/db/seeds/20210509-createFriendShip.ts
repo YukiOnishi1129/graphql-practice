@@ -6,7 +6,7 @@ require("module-alias/register");
 import { Factory, Seeder } from "typeorm-seeding";
 import { Connection } from "typeorm";
 /* models */
-import { FriendShip } from "@Models/FriendShip";
+import { FriendShip } from "@Models/index";
 
 export default class CreateFriendShip implements Seeder {
   public async run(factory: Factory, connection: Connection): Promise<void> {
