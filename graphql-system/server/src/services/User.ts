@@ -5,14 +5,9 @@
 require("module-alias/register");
 import { createConnection, getRepository, Not } from "typeorm";
 /* graphQL */
-import {
-  User as UserGraphQLType,
-  AllUser as AllUserGraphQLType,
-} from "@GraphQL/generated";
+import { User as UserGraphQLType } from "@GraphQL/generated";
 /* models */
 import { User } from "@Models/index";
-/* types */
-import { UserType } from "@Types/User";
 
 /**
  * ログインユーザー取得
@@ -87,16 +82,16 @@ export const getMyUserRelation = async (
 /**
  * user初期値
  */
-const userInitState: UserType = {
-  id: 0,
-  name: "",
-  email: "",
-  password: "",
-  avatar: "",
-  createdAt: new Date(),
-  updatedAt: new Date(),
-  deleteFlg: false,
-};
+// const userInitState: UserType = {
+//   id: 0,
+//   name: "",
+//   email: "",
+//   password: "",
+//   avatar: "",
+//   createdAt: new Date(),
+//   updatedAt: new Date(),
+//   deleteFlg: false,
+// };
 
 // const users = await connection
 //   .getRepository(User)

@@ -1,3 +1,7 @@
+/**
+ * リゾルバ UserResolvers
+ * @package graphql
+ */
 import { IResolvers } from "graphql-tools";
 import {
   AuthenticateResponse,
@@ -10,6 +14,9 @@ import {
 import { getMyUser, getAllUser } from "@Services/User";
 import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
 
+/**
+ * UserResolvers
+ */
 export const UserResolvers: IResolvers = {
   Query: {
     /**
