@@ -54,12 +54,19 @@ export const UserResolvers: IResolvers = {
      * allUsers
      * @returns
      */
-    async allUsers(): Promise<AllUserGraphQLType[] | undefined> {
-      // TODO: userIdは仮設定
-      const users = await getAllUser(1);
+    async allUsers(
+      parent,
+      args,
+      { currentUser }
+    ): Promise<AllUserGraphQLType[] | undefined> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+      const users = await getAllUser(currentUser.id);
 
       if (!users) {
-        return;
+        throw new ApolloError("リクエストエラーです。", "400");
       }
       const allUsers: AllUserGraphQLType[] = [];
       for await (const user of users) {
@@ -68,7 +75,7 @@ export const UserResolvers: IResolvers = {
           name: user.name,
           email: user.email,
           avatar: user.avatar,
-          friendFlg: await isUserFriendship(user.id, 1), // TODO: userIdは仮設定
+          friendFlg: await isUserFriendship(user.id, currentUser.id),
           createdAt: user.createdAt,
         });
       }
