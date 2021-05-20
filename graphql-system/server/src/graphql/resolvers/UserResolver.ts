@@ -15,6 +15,8 @@ import {
 /* services */
 import { getMyUser, getAllUser, loginAuth } from "@Services/User";
 import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
+/* types */
+import { ResolverContextType } from "@Types/index";
 
 /**
  * UserResolvers
@@ -28,7 +30,11 @@ export const UserResolvers: IResolvers = {
      * @param {User} {currentUser}
      * @returns
      */
-    async me(parent, args, { currentUser }): Promise<UserGraphQLType> {
+    async me(
+      parent,
+      args,
+      { currentUser }: ResolverContextType
+    ): Promise<UserGraphQLType> {
       // contextのuserデータの有無を確認
       if (!currentUser) {
         throw new ApolloError("認証エラーです。", "401");
@@ -57,7 +63,7 @@ export const UserResolvers: IResolvers = {
     async allUsers(
       parent,
       args,
-      { currentUser }
+      { currentUser }: ResolverContextType
     ): Promise<AllUserGraphQLType[] | undefined> {
       // contextのuserデータの有無を確認
       if (!currentUser) {
