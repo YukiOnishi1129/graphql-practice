@@ -12,6 +12,7 @@ export interface UserType {
   email: string;
   password: string;
   avatar: string;
+  token: string;
   readonly createdAt?: Date;
   readonly updatedAt?: Date;
   deleteFlg?: boolean;

@@ -3,8 +3,11 @@ require("module-alias/register");
 import express from "express";
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
+import dotenv from "dotenv";
 /* schema */
 import schema from "./graphql/schemasMap";
+
+dotenv.config();
 
 async function start() {
   const app = express();
@@ -16,6 +19,12 @@ async function start() {
 
   const server = new ApolloServer({
     schema,
+    context: async () => ({
+      jwt: {
+        secret: process.env.JWT_SECRET,
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      },
+    }),
   });
 
   server.applyMiddleware({ app });

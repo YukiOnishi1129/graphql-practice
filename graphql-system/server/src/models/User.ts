@@ -34,6 +34,9 @@ export class User implements UserType {
   @Column("varchar", { name: "avatar", length: "255" })
   public avatar!: string;
 
+  @Column("varchar", { name: "token", length: "255" })
+  public token!: string;
+
   @CreateDateColumn({ name: "created_at" })
   readonly createdAt?: Date;
 

@@ -3,6 +3,8 @@
  * @package graphql
  */
 import { IResolvers } from "graphql-tools";
+import * as jwtWebToken from "jsonwebtoken";
+/* graphql */
 import {
   AuthenticateResponse,
   MutationRegisterArgs,
@@ -75,10 +77,9 @@ export const UserResolvers: IResolvers = {
     },
   },
   Mutation: {
-    async register(
-      _: void,
-      args: MutationRegisterArgs
-    ): Promise<AuthenticateResponse> {
+    async register(parent, { email, password }): Promise<AuthenticateResponse> {
+      // const token = await jwtWebToken.sign({}, jwt.secret, jwt.expiresIn);
+      // console.log(token);
       return {
         token: "token",
       };
@@ -95,6 +96,8 @@ export const UserResolvers: IResolvers = {
   //   // parseLiteral: (ast) => ast.value,
   // }),
 };
+
+// const createToken = async ()
 
 // 引数ない場合のクエリ
 /**
