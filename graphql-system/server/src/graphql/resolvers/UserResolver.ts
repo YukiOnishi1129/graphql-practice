@@ -2,6 +2,7 @@
  * リゾルバ UserResolvers
  * @package graphql
  */
+import { ApolloError } from "apollo-server-errors";
 import { IResolvers } from "graphql-tools";
 import * as jwtWebToken from "jsonwebtoken";
 /* graphql */
@@ -22,15 +23,21 @@ export const UserResolvers: IResolvers = {
   Query: {
     /**
      * me
+     * @param parent
+     * @param args
+     * @param {User} {currentUser}
      * @returns
      */
-    async me(): Promise<UserGraphQLType | undefined> {
-      // TODO: userIdは仮設定
-      const user = await getMyUser(1);
-      const friends = await getFriendShipByUserId(1);
+    async me(parent, args, { currentUser }): Promise<UserGraphQLType> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+      const user = await getMyUser(currentUser.id);
+      const friends = await getFriendShipByUserId(currentUser.id);
 
       if (!user) {
-        return;
+        throw new ApolloError("リクエストエラーです。", "400");
       }
 
       return {
