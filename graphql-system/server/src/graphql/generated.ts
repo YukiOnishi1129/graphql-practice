@@ -57,6 +57,11 @@ export type FriendShip = {
   createdAt: Scalars["DateTime"];
 };
 
+export type LoginInput = {
+  email: Scalars["String"];
+  password: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
@@ -65,13 +70,11 @@ export type Mutation = {
 };
 
 export type MutationLoginArgs = {
-  email: Scalars["String"];
-  password: Scalars["String"];
+  input?: Maybe<LoginInput>;
 };
 
 export type MutationRegisterArgs = {
-  email: Scalars["String"];
-  password: Scalars["String"];
+  input: RegisterInput;
 };
 
 export type Query = {
@@ -80,6 +83,12 @@ export type Query = {
   allUsers: Array<AllUser>;
   chat: Chat;
   me: User;
+};
+
+export type RegisterInput = {
+  name: Scalars["String"];
+  email: Scalars["String"];
+  password: Scalars["String"];
 };
 
 export type Statement = {
@@ -225,8 +234,10 @@ export type ResolversTypes = {
   Chat: ResolverTypeWrapper<Chat>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
   FriendShip: ResolverTypeWrapper<FriendShip>;
+  LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  RegisterInput: RegisterInput;
   Statement: ResolverTypeWrapper<Statement>;
   User: ResolverTypeWrapper<User>;
 };
@@ -241,8 +252,10 @@ export type ResolversParentTypes = {
   Chat: Chat;
   DateTime: Scalars["DateTime"];
   FriendShip: FriendShip;
+  LoginInput: LoginInput;
   Mutation: {};
   Query: {};
+  RegisterInput: RegisterInput;
   Statement: Statement;
   User: User;
 };
@@ -307,13 +320,13 @@ export type MutationResolvers<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
     ContextType,
-    RequireFields<MutationLoginArgs, "email" | "password">
+    RequireFields<MutationLoginArgs, never>
   >;
   register?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
     ContextType,
-    RequireFields<MutationRegisterArgs, "email" | "password">
+    RequireFields<MutationRegisterArgs, "input">
   >;
 };
 

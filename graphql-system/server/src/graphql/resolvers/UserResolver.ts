@@ -4,6 +4,7 @@
  */
 import { ApolloError } from "apollo-server-errors";
 import { IResolvers } from "graphql-tools";
+import bcrypt from "bcrypt";
 import * as jwtWebToken from "jsonwebtoken";
 /* graphql */
 import {
@@ -11,9 +12,17 @@ import {
   MutationRegisterArgs,
   User as UserGraphQLType,
   AllUser as AllUserGraphQLType,
+  LoginInput,
+  RegisterInput,
 } from "../generated";
 /* services */
-import { getMyUser, getAllUser, loginAuth } from "@Services/User";
+import {
+  getMyUser,
+  getAllUser,
+  loginAuth,
+  registerUser,
+  isNotSameEmailUser,
+} from "@Services/User";
 import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
 /* types */
 import { ResolverContextType } from "@Types/index";
@@ -92,24 +101,51 @@ export const UserResolvers: IResolvers = {
   Mutation: {
     /**
      * ログイン処理
+     * @param parent
+     * @param args
+     * @returns
      */
-    async login(
-      parent,
-      { email, password }
-    ): Promise<AuthenticateResponse | undefined> {
-      const user = await loginAuth(email, password);
+    async login(parent, args): Promise<AuthenticateResponse> {
+      if (!args?.input?.email || !args?.input?.password) {
+        throw new ApolloError("リクエストパラメータエラーです。", "40０");
+      }
+      const user = await loginAuth(args.input.email, args.input.password);
       if (!user) {
-        return;
+        throw new ApolloError("認証エラーです。", "401");
       }
       return {
         token: user.token,
       };
     },
-    async register(parent, { email, password }): Promise<AuthenticateResponse> {
+    /**
+     * 会員登録処理
+     * @param parent
+     * @param args
+     * @returns
+     */
+    async register(parent, args): Promise<AuthenticateResponse> {
+      // メールアドレス重複判定
+      if (!(await isNotSameEmailUser(args.input.email))) {
+        throw new ApolloError(
+          "メールアドレスが同じユーザーが存在します。他のメールアドレスを登録してください。",
+          "400"
+        );
+      }
+      console.log(args.input.password);
+      // パスワードhash化
+      const hashPassword = await bcrypt.hash(args.input.password, 10);
+      console.log(hashPassword);
       // const token = await jwtWebToken.sign({}, jwt.secret, jwt.expiresIn);
-      // console.log(token);
+      // トークン発行
+      const token = Math.random().toString(32).substring(2);
+      await registerUser(
+        args.input.name,
+        args.input.email,
+        hashPassword,
+        token
+      );
       return {
-        token: "token",
+        token,
       };
     },
   },

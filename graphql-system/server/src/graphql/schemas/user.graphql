@@ -3,9 +3,20 @@ extend type Query {
   allUsers: [AllUser!]!
 }
 
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input RegisterInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
 extend type Mutation {
-  login(email: String!, password: String!): AuthenticateResponse!
-  register(email: String!, password: String!): AuthenticateResponse!
+  login(input: LoginInput): AuthenticateResponse!
+  register(input: RegisterInput!): AuthenticateResponse!
 }
 
 type AuthenticateResponse {
