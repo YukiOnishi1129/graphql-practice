@@ -38,6 +38,7 @@ export type AllUser = {
 
 export type AuthenticateResponse = {
   __typename?: "AuthenticateResponse";
+  user: User;
   token: Scalars["String"];
 };
 
@@ -277,6 +278,7 @@ export type AuthenticateResponseResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["AuthenticateResponse"] = ResolversParentTypes["AuthenticateResponse"]
 > = {
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
   token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };

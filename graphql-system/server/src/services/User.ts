@@ -173,13 +173,22 @@ export const registerUser = async (
   email: string,
   password: string,
   token: string
-): Promise<void> => {
+): Promise<
+  | ({
+      name: string;
+      email: string;
+      password: string;
+      avatar: string;
+      token: string;
+    } & User)
+  | undefined
+> => {
   const connection = await createConnection();
 
   const userRepository = getRepository(User);
 
   try {
-    await userRepository.save({
+    const user = await userRepository.save({
       name: name,
       email: email,
       password: password,
@@ -187,6 +196,7 @@ export const registerUser = async (
       token: token,
     });
     await connection.close();
+    return user;
   } catch (error) {
     console.log(error);
     await connection.close();

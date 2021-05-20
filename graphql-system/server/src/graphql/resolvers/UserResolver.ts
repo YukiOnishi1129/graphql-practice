@@ -5,15 +5,12 @@
 import { ApolloError } from "apollo-server-errors";
 import { IResolvers } from "graphql-tools";
 import bcrypt from "bcrypt";
-import * as jwtWebToken from "jsonwebtoken";
+// import * as jwtWebToken from "jsonwebtoken";
 /* graphql */
 import {
   AuthenticateResponse,
-  MutationRegisterArgs,
   User as UserGraphQLType,
   AllUser as AllUserGraphQLType,
-  LoginInput,
-  RegisterInput,
 } from "../generated";
 /* services */
 import {
@@ -31,6 +28,9 @@ import { ResolverContextType } from "@Types/index";
  * UserResolvers
  */
 export const UserResolvers: IResolvers = {
+  /**
+   * Query
+   */
   Query: {
     /**
      * me
@@ -98,6 +98,10 @@ export const UserResolvers: IResolvers = {
       return allUsers;
     },
   },
+
+  /**
+   * Mutation
+   */
   Mutation: {
     /**
      * ログイン処理
@@ -114,6 +118,14 @@ export const UserResolvers: IResolvers = {
         throw new ApolloError("認証エラーです。", "401");
       }
       return {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          createdAt: user.createdAt,
+          friends: [],
+        },
         token: user.token,
       };
     },
@@ -131,24 +143,53 @@ export const UserResolvers: IResolvers = {
           "400"
         );
       }
-      console.log(args.input.password);
       // パスワードhash化
       const hashPassword = await bcrypt.hash(args.input.password, 10);
-      console.log(hashPassword);
       // const token = await jwtWebToken.sign({}, jwt.secret, jwt.expiresIn);
       // トークン発行
       const token = Math.random().toString(32).substring(2);
-      await registerUser(
+      const user = await registerUser(
         args.input.name,
         args.input.email,
         hashPassword,
         token
       );
+      if (!user) {
+        throw new ApolloError(
+          "システムエラー。会員登録が失敗しました。",
+          "500"
+        );
+      }
       return {
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          createdAt: user.createdAt,
+          friends: [],
+        },
         token,
       };
     },
   },
+
+  /**
+   * playgroundの記述はこんな感じ
+   * mutation signup($input: RegisterInput!) {
+      register(input:$input) {
+        user {
+          id
+          name
+          email
+          avatar
+          createdAt
+        }
+        token
+      }
+    }
+   *
+   */
 
   // カスタムスカラーのリゾルバを作成
   // DateTime: new GraphQLScalarType({

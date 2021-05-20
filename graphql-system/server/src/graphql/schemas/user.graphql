@@ -20,6 +20,7 @@ extend type Mutation {
 }
 
 type AuthenticateResponse {
+  user: User!
   token: String!
 }
 
