@@ -4,6 +4,7 @@
  */
 require("module-alias/register");
 import { createConnection, getRepository, Not } from "typeorm";
+import bcrypt from "bcrypt";
 /* graphQL */
 import { User as UserGraphQLType } from "@GraphQL/generated";
 /* models */
@@ -76,6 +77,59 @@ export const getMyUserRelation = async (
 
   await connection.close();
   return users;
+};
+
+/**
+ * ログイン処理
+ * @param email
+ * @param password
+ * @returns
+ */
+export const loginAuth = async (email: string, password: string) => {
+  const connection = await createConnection();
+
+  const userRepository = getRepository(User);
+  const user = await userRepository.findOne({ email: email });
+  await connection.close();
+
+  if (!user) {
+    return;
+  }
+
+  if (await bcrypt.compare(password, user.password)) {
+    return user;
+  } else {
+    console.log("パスワードが一致しない");
+    return;
+  }
+};
+
+/**
+ * トークン認証
+ * @param token
+ * @returns
+ */
+export const authTokenUser = async (
+  token: string
+): Promise<UserGraphQLType | undefined> => {
+  const connection = await createConnection();
+
+  const userRepository = getRepository(User);
+  const user = await userRepository.findOne({ token: token });
+  await connection.close();
+
+  if (!user) {
+    return;
+  }
+
+  return {
+    id: user.id,
+    name: user.name,
+    email: user.email,
+    avatar: user.avatar,
+    createdAt: user.createdAt,
+    friends: [],
+  };
 };
 
 // Constants ==============================

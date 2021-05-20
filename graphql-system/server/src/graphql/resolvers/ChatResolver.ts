@@ -17,9 +17,17 @@ import { getChatStatementRelations } from "@Services/ChatStatementRelations";
  */
 export const ChatResolvers: IResolvers = {
   Query: {
-    async chat(): Promise<ChatGraphQLType | undefined> {
-      // TODO: 引数のuserIdは仮設定
-      const chatData = await getChat(1);
+    async chat(
+      parent,
+      args,
+      { currentUser }
+    ): Promise<ChatGraphQLType | undefined> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        return;
+      }
+
+      const chatData = await getChat(currentUser.id);
       if (!chatData) {
         return;
       }

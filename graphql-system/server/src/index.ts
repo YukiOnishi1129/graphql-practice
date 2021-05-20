@@ -1,11 +1,12 @@
 require("module-alias/register");
-// require("dotenv").config();
 import express from "express";
 import "reflect-metadata";
 import { ApolloServer } from "apollo-server-express";
 import dotenv from "dotenv";
 /* schema */
 import schema from "./graphql/schemasMap";
+/* services */
+import { authTokenUser } from "@Services/User";
 
 dotenv.config();
 
@@ -19,12 +20,16 @@ async function start() {
 
   const server = new ApolloServer({
     schema,
-    context: async () => ({
-      jwt: {
-        secret: process.env.JWT_SECRET,
-        expiresIn: process.env.JWT_EXPIRES_IN,
-      },
-    }),
+    context: async ({ req }) => {
+      // playgroundで実施する場合、HTTP HEADERSに以下を投入する
+      // {"authorization": tokenの値 }
+
+      // header情報にtokenを入れておき、そのtokenからuser情報を取得し、リゾルバに渡す (リゾルバ実行前に実施される)
+      const token = req ? req.headers.authorization : "";
+      const currentUser = await authTokenUser(token ? token : "");
+
+      return { currentUser };
+    },
   });
 
   server.applyMiddleware({ app });

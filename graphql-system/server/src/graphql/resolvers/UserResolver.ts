@@ -8,12 +8,11 @@ import * as jwtWebToken from "jsonwebtoken";
 import {
   AuthenticateResponse,
   MutationRegisterArgs,
-  QueryLoginArgs,
   User as UserGraphQLType,
   AllUser as AllUserGraphQLType,
 } from "../generated";
 /* services */
-import { getMyUser, getAllUser } from "@Services/User";
+import { getMyUser, getAllUser, loginAuth } from "@Services/User";
 import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
 
 /**
@@ -69,14 +68,23 @@ export const UserResolvers: IResolvers = {
 
       return allUsers;
     },
-
-    async login(_: void, args: QueryLoginArgs): Promise<AuthenticateResponse> {
-      return {
-        token: "token",
-      };
-    },
   },
   Mutation: {
+    /**
+     * ログイン処理
+     */
+    async login(
+      parent,
+      { email, password }
+    ): Promise<AuthenticateResponse | undefined> {
+      const user = await loginAuth(email, password);
+      if (!user) {
+        return;
+      }
+      return {
+        token: user.token,
+      };
+    },
     async register(parent, { email, password }): Promise<AuthenticateResponse> {
       // const token = await jwtWebToken.sign({}, jwt.secret, jwt.expiresIn);
       // console.log(token);
