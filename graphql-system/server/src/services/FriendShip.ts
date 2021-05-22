@@ -50,6 +50,103 @@ export const getFriendShipByUserId = async (
 };
 
 /**
+ * userIdとfriendUserIdに紐づくデータ所得
+ * @param userId
+ * @param friendUserId
+ * @returns
+ */
+export const getFriedShipByUserIdAndFriendId = async (
+  userId: number,
+  friendUserId: number
+): Promise<FriendShip | undefined> => {
+  const connection = await createConnection();
+  const friendRepository = getRepository(FriendShip);
+
+  const friendShips = await friendRepository.findOne({
+    where: { userId: userId, friendUserId: friendUserId },
+  });
+  await connection.close();
+
+  // レコードがない場合
+  if (!friendShips) {
+    return;
+  }
+
+  return friendShips;
+};
+
+/**
+ * 登録処理
+ * @param myUserId
+ * @param friendUserId
+ * @returns
+ */
+export const registerFriendShip = async (
+  myUserId: number,
+  friendUserId: number
+): Promise<
+  | ({
+      userId: number;
+      friendUserId: number;
+    } & FriendShip)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const friendRepository = getRepository(FriendShip);
+
+  try {
+    const registerData = await friendRepository.save({
+      userId: myUserId,
+      friendUserId: friendUserId,
+    });
+    await connection.close();
+    return registerData;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};
+
+/**
+ * 論理削除解除処理
+ * @param myUserId
+ * @param friendUserId
+ * @returns
+ */
+export const restoreFriendShip = async (
+  myUserId: number,
+  friendUserId: number
+): Promise<
+  | ({
+      userId: number;
+      friendUserId: number;
+    } & FriendShip)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const friendRepository = getRepository(FriendShip);
+
+  const friendShipData = await friendRepository.findOne({
+    where: { userId: myUserId, friendUserId: friendUserId },
+  });
+
+  if (!friendShipData) {
+    return;
+  }
+
+  friendShipData.deleteFlg = false;
+
+  try {
+    const registerData = await friendRepository.save(friendShipData);
+    await connection.close();
+    return registerData;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};
+
+/**
  * 条件にマッチしたfriendデータの有無確認
  * @param userId
  * @param friendUserId
