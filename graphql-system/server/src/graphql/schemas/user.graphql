@@ -14,14 +14,24 @@ input RegisterInput {
   password: String!
 }
 
+input FriendInput {
+  friendUserId: Int!
+}
+
 extend type Mutation {
   login(input: LoginInput): AuthenticateResponse!
   register(input: RegisterInput!): AuthenticateResponse!
+  createFriend(input: FriendInput!): fiendShipResponse!
+  deleteFriend(input: FriendInput!): fiendShipResponse!
 }
 
 type AuthenticateResponse {
   user: User!
   token: String!
+}
+
+type fiendShipResponse {
+  allUsers: [AllUser!]!
 }
 
 """

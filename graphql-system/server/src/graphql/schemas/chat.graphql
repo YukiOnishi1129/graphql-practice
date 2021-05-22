@@ -1,10 +1,21 @@
 extend type Query {
   chat: Chat!
+  allChat: [Chat!]!
 }
 
-# extend type Mutation {
+extend type Mutation {
+  postStatement(input: ChatStatementInput!): StatementResponse!
+}
 
-# }
+input ChatStatementInput {
+  chatId: Int!
+  friendUserId: Int!
+  statement: String!
+}
+
+type StatementResponse {
+  statement: Statement!
+}
 
 type Chat {
   id: Int!
