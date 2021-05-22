@@ -176,8 +176,22 @@ export const UserResolvers: IResolvers = {
 
   /**
    * playgroundの記述はこんな感じ
-   * mutation signup($input: RegisterInput!) {
-      register(input:$input) {
+   * 
+   * mutation signin($loginInput: LoginInput!) {
+      login(input:$loginInput) {
+        user {
+          id
+          name
+          email
+          avatar
+          createdAt
+        }
+        token
+      }
+    }
+
+    mutation signup($registerInput: RegisterInput!) {
+      register(input:$registerInput) {
         user {
           id
           name
@@ -189,6 +203,21 @@ export const UserResolvers: IResolvers = {
       }
     }
    *
+   */
+
+  /**
+   * inputはこんな感じ
+   * {
+      "loginInput": {
+        "email": "humiko@gmail.com",
+        "password": "password"
+      },
+      "registerInput": {
+        "name": "ニャンコ",
+        "email": "nyanko@gmail.com",
+        "password": "password"
+      }
+    }
    */
 
   // カスタムスカラーのリゾルバを作成
