@@ -29,3 +29,27 @@ export const getChat = async (
 
   return chat;
 };
+
+/**
+ *
+ * @param userId
+ * @returns
+ */
+export const getChatList = async (
+  userId: number
+): Promise<ChatModel[] | undefined> => {
+  const connection = await createConnection();
+  const chatRepository = getRepository(ChatModel);
+  const chatList = await chatRepository.find({
+    where: { userId: userId },
+    relations: ["friend"],
+  });
+
+  await connection.close();
+
+  if (!chatList) {
+    return;
+  }
+
+  return chatList;
+};

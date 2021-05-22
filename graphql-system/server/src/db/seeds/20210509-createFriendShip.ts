@@ -31,6 +31,14 @@ export default class CreateFriendShip implements Seeder {
           userId: 3,
           friendUserId: 1,
         },
+        {
+          userId: 4,
+          friendUserId: 1,
+        },
+        {
+          userId: 1,
+          friendUserId: 4,
+        },
       ])
       .execute();
   }

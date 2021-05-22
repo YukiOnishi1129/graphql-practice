@@ -12,7 +12,7 @@ import {
 } from "../generated";
 /* Services */
 import { getMyUser } from "@Services/User";
-import { getChat } from "@Services/Chat";
+import { getChat, getChatList } from "@Services/Chat";
 import { registerStatement } from "@Services/Statement";
 import {
   getChatStatementRelations,
@@ -54,7 +54,21 @@ export const ChatResolvers: IResolvers = {
       const relations = await getChatStatementRelations(chatData.id);
 
       if (!relations) {
-        throw new ApolloError("リクエストエラーです。", "400");
+        // statementなしのreturn
+        return {
+          id: chatData.id,
+          friend: {
+            id: chatData.friend.id,
+            name: chatData.friend.name,
+            email: chatData.friend.email,
+            avatar: chatData.friend.avatar,
+            createdAt: chatData.friend.createdAt,
+            friends: [],
+          },
+          userId: chatData.userId,
+          statement: [],
+          createdAt: chatData.createdAt,
+        };
       }
 
       const statement: StatementGraphQLType[] = [];
@@ -94,6 +108,79 @@ export const ChatResolvers: IResolvers = {
         statement: statement,
         createdAt: chatData.createdAt,
       };
+    },
+
+    /**
+     * allChat
+     * @param parent
+     * @param args
+     * @param param2
+     * @returns
+     */
+    async allChat(
+      parent,
+      args,
+      { currentUser }: ResolverContextType
+    ): Promise<ChatGraphQLType[] | undefined> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+      const chatList = await getChatList(currentUser.id);
+
+      if (!chatList) {
+        throw new ApolloError("リクエストエラーです。", "400");
+      }
+
+      const responseChatList: ChatGraphQLType[] = [];
+      for await (const chatData of chatList) {
+        const responseChat: ChatGraphQLType = {
+          id: chatData.id,
+          friend: {
+            id: chatData.friend.id,
+            name: chatData.friend.name,
+            email: chatData.friend.email,
+            avatar: chatData.friend.avatar,
+            createdAt: chatData.friend.createdAt,
+            friends: [],
+          },
+          userId: chatData.userId,
+          statement: [],
+          createdAt: chatData.createdAt,
+        };
+        const relations = await getChatStatementRelations(chatData.id);
+        if (!relations) {
+          responseChatList.push(responseChat);
+          continue;
+        }
+        console.log("hhh");
+
+        const statement: StatementGraphQLType[] = [];
+
+        for await (const relate of relations) {
+          const userData = await getMyUser(relate.statement.userId);
+          if (!userData) {
+            throw new ApolloError("リクエストエラーです。", "400");
+          }
+          statement.push({
+            id: relate.statement.id,
+            user: {
+              id: userData.id,
+              name: userData.name,
+              email: userData.email,
+              avatar: userData.avatar,
+              createdAt: userData.createdAt,
+              friends: [],
+            },
+            content: relate.statement.content,
+            createdAt: relate.statement.createdAt,
+          });
+          responseChat.statement = statement;
+        }
+
+        responseChatList.push(responseChat);
+      }
+      return responseChatList;
     },
   },
 

@@ -33,6 +33,16 @@ export default class CreateChat implements Seeder {
         userId: 3,
         friendUserId: 1,
       },
+      {
+        id: 5,
+        userId: 1,
+        friendUserId: 4,
+      },
+      {
+        id: 6,
+        userId: 4,
+        friendUserId: 1,
+      },
     ];
 
     await connection

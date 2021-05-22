@@ -1,5 +1,6 @@
 extend type Query {
   chat: Chat!
+  allChat: [Chat!]!
 }
 
 extend type Mutation {

@@ -91,6 +91,7 @@ export type MutationRegisterArgs = {
 export type Query = {
   __typename?: "Query";
   _empty?: Maybe<Scalars["String"]>;
+  allChat: Array<Chat>;
   allUsers: Array<AllUser>;
   chat: Chat;
   me: User;
@@ -362,6 +363,7 @@ export type QueryResolvers<
   ParentType extends ResolversParentTypes["Query"] = ResolversParentTypes["Query"]
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  allChat?: Resolver<Array<ResolversTypes["Chat"]>, ParentType, ContextType>;
   allUsers?: Resolver<
     Array<ResolversTypes["AllUser"]>,
     ParentType,

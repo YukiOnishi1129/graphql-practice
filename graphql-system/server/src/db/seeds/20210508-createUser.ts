@@ -41,13 +41,26 @@ export default class CreateUsers implements Seeder {
         avatar: "",
         token: "kkhtvo2987",
       },
+      {
+        name: "mearry",
+        email: "mearry@gmail.com",
+        password: hashPassword,
+        avatar: "",
+        token: "slkgh2987",
+      },
+      {
+        name: "jon",
+        email: "jon@gmail.com",
+        password: hashPassword,
+        avatar: "",
+        token: "lsvbyu0075",
+      },
     ];
 
     await connection
       .createQueryBuilder()
       .insert()
       .into(User)
-      // TODO: 仮設定
       .values(initUserState)
       .execute();
 

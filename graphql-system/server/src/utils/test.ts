@@ -17,12 +17,12 @@ import {
   isNotSameEmailUser,
 } from "@Services/User";
 import { getFriendShipByUserId, isUserFriendship } from "@Services/FriendShip";
-import { getChat } from "@Services/Chat";
+import { getChat, getChatList } from "@Services/Chat";
 import { registerStatement } from "@Services/Statement";
 import { getChatStatementRelations } from "@Services/ChatStatementRelations";
 
 const fetch = async () => {
-  const data = await registerStatement(1, "こんにちは");
+  const data = await getChatList(1);
   console.log(data);
 };
 
