@@ -38,6 +38,7 @@ export type AllUser = {
 
 export type AuthenticateResponse = {
   __typename?: "AuthenticateResponse";
+  user: User;
   token: Scalars["String"];
 };
 
@@ -57,15 +58,24 @@ export type FriendShip = {
   createdAt: Scalars["DateTime"];
 };
 
+export type LoginInput = {
+  email: Scalars["String"];
+  password: Scalars["String"];
+};
+
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
+  login: AuthenticateResponse;
   register: AuthenticateResponse;
 };
 
+export type MutationLoginArgs = {
+  input?: Maybe<LoginInput>;
+};
+
 export type MutationRegisterArgs = {
-  email: Scalars["String"];
-  password: Scalars["String"];
+  input: RegisterInput;
 };
 
 export type Query = {
@@ -73,11 +83,11 @@ export type Query = {
   _empty?: Maybe<Scalars["String"]>;
   allUsers: Array<AllUser>;
   chat: Chat;
-  login: AuthenticateResponse;
   me: User;
 };
 
-export type QueryLoginArgs = {
+export type RegisterInput = {
+  name: Scalars["String"];
   email: Scalars["String"];
   password: Scalars["String"];
 };
@@ -225,8 +235,10 @@ export type ResolversTypes = {
   Chat: ResolverTypeWrapper<Chat>;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
   FriendShip: ResolverTypeWrapper<FriendShip>;
+  LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
   Query: ResolverTypeWrapper<{}>;
+  RegisterInput: RegisterInput;
   Statement: ResolverTypeWrapper<Statement>;
   User: ResolverTypeWrapper<User>;
 };
@@ -241,8 +253,10 @@ export type ResolversParentTypes = {
   Chat: Chat;
   DateTime: Scalars["DateTime"];
   FriendShip: FriendShip;
+  LoginInput: LoginInput;
   Mutation: {};
   Query: {};
+  RegisterInput: RegisterInput;
   Statement: Statement;
   User: User;
 };
@@ -264,6 +278,7 @@ export type AuthenticateResponseResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["AuthenticateResponse"] = ResolversParentTypes["AuthenticateResponse"]
 > = {
+  user?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
   token?: Resolver<ResolversTypes["String"], ParentType, ContextType>;
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
@@ -303,11 +318,17 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  login?: Resolver<
+    ResolversTypes["AuthenticateResponse"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationLoginArgs, never>
+  >;
   register?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
     ContextType,
-    RequireFields<MutationRegisterArgs, "email" | "password">
+    RequireFields<MutationRegisterArgs, "input">
   >;
 };
 
@@ -322,12 +343,6 @@ export type QueryResolvers<
     ContextType
   >;
   chat?: Resolver<ResolversTypes["Chat"], ParentType, ContextType>;
-  login?: Resolver<
-    ResolversTypes["AuthenticateResponse"],
-    ParentType,
-    ContextType,
-    RequireFields<QueryLoginArgs, "email" | "password">
-  >;
   me?: Resolver<ResolversTypes["User"], ParentType, ContextType>;
 };
 

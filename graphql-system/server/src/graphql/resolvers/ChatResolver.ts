@@ -2,6 +2,7 @@
  * リゾルバ ChatResolvers
  * @package graphql
  */
+import { ApolloError } from "apollo-server-errors";
 import { IResolvers } from "graphql-tools";
 import {
   Chat as ChatGraphQLType,
@@ -11,23 +12,40 @@ import {
 import { getMyUser } from "@Services/User";
 import { getChat } from "@Services/Chat";
 import { getChatStatementRelations } from "@Services/ChatStatementRelations";
+/* types */
+import { ResolverContextType } from "@Types/index";
 
 /**
  * ChatResolvers
  */
 export const ChatResolvers: IResolvers = {
   Query: {
-    async chat(): Promise<ChatGraphQLType | undefined> {
-      // TODO: 引数のuserIdは仮設定
-      const chatData = await getChat(1);
+    /**
+     * chat
+     * @param parent
+     * @param args
+     * @param  {UserGraphQLType} {currentUser}
+     * @returns
+     */
+    async chat(
+      parent,
+      args,
+      { currentUser }: ResolverContextType
+    ): Promise<ChatGraphQLType> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+
+      const chatData = await getChat(currentUser.id);
       if (!chatData) {
-        return;
+        throw new ApolloError("リクエストエラーです。", "400");
       }
 
       const relations = await getChatStatementRelations(chatData.id);
 
       if (!relations) {
-        return;
+        throw new ApolloError("リクエストエラーです。", "400");
       }
 
       const statement: StatementGraphQLType[] = [];
@@ -35,7 +53,7 @@ export const ChatResolvers: IResolvers = {
       for await (const relate of relations) {
         const userData = await getMyUser(relate.statement.userId);
         if (!userData) {
-          return;
+          throw new ApolloError("リクエストエラーです。", "400");
         }
 
         statement.push({

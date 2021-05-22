@@ -4,6 +4,7 @@
  */
 require("module-alias/register");
 import { createConnection, getRepository, Not } from "typeorm";
+import bcrypt from "bcrypt";
 /* graphQL */
 import { User as UserGraphQLType } from "@GraphQL/generated";
 /* models */
@@ -76,6 +77,130 @@ export const getMyUserRelation = async (
 
   await connection.close();
   return users;
+};
+
+/**
+ * ログイン処理
+ * @param email
+ * @param password
+ * @returns
+ */
+export const loginAuth = async (
+  email: string,
+  password: string
+): Promise<User | undefined> => {
+  const connection = await createConnection();
+
+  const userRepository = getRepository(User);
+  const user = await userRepository.findOne({ email: email });
+  await connection.close();
+
+  if (!user) {
+    return;
+  }
+
+  if (await bcrypt.compare(password, user.password)) {
+    return user;
+  } else {
+    console.log("パスワードが一致しない");
+    return;
+  }
+};
+
+/**
+ * トークン認証
+ * @param token
+ * @returns
+ */
+export const authTokenUser = async (
+  token: string
+): Promise<UserGraphQLType | undefined> => {
+  const connection = await createConnection();
+  const userRepository = getRepository(User);
+  try {
+    const user = await userRepository.findOne({ token: token });
+    await connection.close();
+    if (!user) {
+      return;
+    }
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      avatar: user.avatar,
+      createdAt: user.createdAt,
+      friends: [],
+    };
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};
+
+/**
+ * 同一Emailのユーザー存在確認処理
+ * @param {string} email
+ * @returns
+ */
+export const isNotSameEmailUser = async (email: string): Promise<boolean> => {
+  const connection = await createConnection();
+  const userRepository = getRepository(User);
+  try {
+    const user = await userRepository.findOne({ email: email });
+    await connection.close();
+
+    // 同じemailのユーザーがいない場合true
+    if (!user) {
+      return true;
+    }
+    return false;
+  } catch (error) {
+    await connection.close();
+    return false;
+  }
+};
+
+/**
+ * ユーザー登録処理
+ * @param name
+ * @param email
+ * @param password
+ * @param token
+ */
+export const registerUser = async (
+  name: string,
+  email: string,
+  password: string,
+  token: string
+): Promise<
+  | ({
+      name: string;
+      email: string;
+      password: string;
+      avatar: string;
+      token: string;
+    } & User)
+  | undefined
+> => {
+  const connection = await createConnection();
+
+  const userRepository = getRepository(User);
+
+  try {
+    const user = await userRepository.save({
+      name: name,
+      email: email,
+      password: password,
+      avatar: "",
+      token: token,
+    });
+    await connection.close();
+    return user;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
 };
 
 // Constants ==============================

@@ -16,7 +16,8 @@ export const getChat = async (
 ): Promise<ChatModel | undefined> => {
   const connection = await createConnection();
   const chatRepository = getRepository(ChatModel);
-  const chat = await chatRepository.findOne(userId, {
+  const chat = await chatRepository.findOne({
+    where: { userId: userId },
     relations: ["friend"],
   });
 
