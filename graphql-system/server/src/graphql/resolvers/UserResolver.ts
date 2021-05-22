@@ -172,6 +172,10 @@ export const UserResolvers: IResolvers = {
         token,
       };
     },
+
+    // async createFriend() {
+
+    // }
   },
 
   /**

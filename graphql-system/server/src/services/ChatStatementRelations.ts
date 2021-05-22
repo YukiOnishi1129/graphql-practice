@@ -18,7 +18,7 @@ export const getChatStatementRelations = async (
   const connection = await createConnection();
   const relationRepository = getRepository(ChatStatementRelationsModel);
   const relations = await relationRepository.find({
-    where: { chatId: chatId },
+    where: { chatId: chatId, deleteFlg: 0 },
     relations: ["statement"],
   });
   await connection.close();

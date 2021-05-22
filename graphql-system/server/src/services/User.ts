@@ -21,7 +21,9 @@ export const getMyUser = async (
   const connection = await createConnection();
   const userRepository = getRepository(User);
 
-  const user = await userRepository.findOne(userId);
+  const user = await userRepository.findOne({
+    where: { id: userId, deleteFlg: 0 },
+  });
 
   await connection.close();
 
@@ -52,7 +54,10 @@ export const getAllUser = async (
   const userRepository = getRepository(User);
 
   const users = await userRepository.find({
-    id: Not(userId),
+    where: {
+      id: Not(userId),
+      deleteFlg: 0,
+    },
   });
 
   await connection.close();
@@ -70,8 +75,8 @@ export const getMyUserRelation = async (
 
   const userRepository = getRepository(User);
 
-  // 成功！
-  const users = await userRepository.findOne(userId, {
+  const users = await userRepository.findOne({
+    where: { id: userId, deleteFlg: 0 },
     relations: ["friendships"],
   });
 
@@ -92,7 +97,9 @@ export const loginAuth = async (
   const connection = await createConnection();
 
   const userRepository = getRepository(User);
-  const user = await userRepository.findOne({ email: email });
+  const user = await userRepository.findOne({
+    where: { email: email, deleteFlg: 0 },
+  });
   await connection.close();
 
   if (!user) {
@@ -118,7 +125,9 @@ export const authTokenUser = async (
   const connection = await createConnection();
   const userRepository = getRepository(User);
   try {
-    const user = await userRepository.findOne({ token: token });
+    const user = await userRepository.findOne({
+      where: { token: token, deleteFlg: 0 },
+    });
     await connection.close();
     if (!user) {
       return;
@@ -147,7 +156,9 @@ export const isNotSameEmailUser = async (email: string): Promise<boolean> => {
   const connection = await createConnection();
   const userRepository = getRepository(User);
   try {
-    const user = await userRepository.findOne({ email: email });
+    const user = await userRepository.findOne({
+      where: { email: email, deleteFlg: 0 },
+    });
     await connection.close();
 
     // 同じemailのユーザーがいない場合true

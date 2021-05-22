@@ -9,6 +9,7 @@ extend type Mutation {
 
 input ChatStatementInput {
   chatId: Int!
+  friendUserId: Int!
   statement: String!
 }
 

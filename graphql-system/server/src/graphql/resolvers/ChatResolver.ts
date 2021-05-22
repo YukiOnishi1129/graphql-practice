@@ -12,8 +12,11 @@ import {
 } from "../generated";
 /* Services */
 import { getMyUser } from "@Services/User";
-import { getChat, getChatList } from "@Services/Chat";
-import { registerStatement } from "@Services/Statement";
+import { getChat, getChatList, getFriendChat } from "@Services/Chat";
+import {
+  registerStatement,
+  registerFriendStatement,
+} from "@Services/Statement";
 import {
   getChatStatementRelations,
   registerRelations,
@@ -204,45 +207,55 @@ export const ChatResolvers: IResolvers = {
         throw new ApolloError("認証エラーです。", "401");
       }
 
-      if (!args?.input?.chatId || !args?.input?.statement) {
+      if (
+        !args?.input?.chatId ||
+        !args?.input?.friendUserId ||
+        !args?.input?.statement
+      ) {
         throw new ApolloError("リクエストパラメータエラーです。", "400");
       }
+
+      const chatId = args.input.chatId;
+      const friendUserId = args.input.friendUserId;
+      const statement = args.input.statement;
 
       /**
        * 1. Statementテーブルへレコードを登録
        * serviceにDB処理の関数を作成
        */
-      const statementData = await registerStatement(
-        args.input.chatId,
-        args.input.statement
-      );
+      const statementData = await registerStatement(currentUser.id, statement);
 
       if (!statementData) {
         throw new ApolloError("DBエラーです。", "500");
       }
 
       const userData = await getMyUser(statementData.userId);
-
       if (!userData) {
         throw new ApolloError("DBエラーです。", "500");
       }
 
-      /**
-       * 2. 分岐処理
-       *  ChatStatementRelationsにレコードがあるか確認
-       *  レコードがない場合、relationsテーブルへ新規登録
-       */
-      const relations = await getChatStatementRelations(args.input.chatId);
+      // 自分のリレーションテーブルを登録
+      const registerRelationsData = await registerRelations(
+        chatId,
+        statementData.id
+      );
+      if (!registerRelationsData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
 
-      if (!relations) {
-        const registerRelationsData = await registerRelations(
-          args.input.chatId,
-          args.input.statement
-        );
+      // フレンド側のチャットデータを取得
+      const friendChatData = await getFriendChat(currentUser.id, friendUserId);
+      if (!friendChatData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
 
-        if (!registerRelationsData) {
-          throw new ApolloError("DBエラーです。", "500");
-        }
+      // フレンド側のリレーションテーブルを登録
+      const friendRegisterRelationsData = await registerRelations(
+        friendChatData.id,
+        statementData.id
+      );
+      if (!friendRegisterRelationsData) {
+        throw new ApolloError("DBエラーです。", "500");
       }
 
       return {

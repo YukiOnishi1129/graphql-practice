@@ -21,7 +21,7 @@ export const getFriendShipByUserId = async (
   const friendRepository = getRepository(FriendShip);
 
   const friendShips = await friendRepository.find({
-    where: { userId: userId },
+    where: { userId: userId, deleteFlg: 0 },
     relations: ["friend"],
   });
 
@@ -63,7 +63,7 @@ export const isUserFriendship = async (
   const friendRepository = getRepository(FriendShip);
 
   const friendShips = await friendRepository.find({
-    where: { userId: userId, friendUserId: friendUserId },
+    where: { userId: userId, friendUserId: friendUserId, deleteFlg: 0 },
   });
 
   await connection.close();

@@ -39,3 +39,36 @@ export const registerStatement = async (
     await connection.close();
   }
 };
+
+/**
+ * チャット相手のstatementを登録
+ * @param friendUserId
+ * @param content
+ * @returns
+ */
+export const registerFriendStatement = async (
+  friendUserId: number,
+  content: string
+): Promise<
+  | ({
+      userId: number;
+      content: string;
+    } & StatementModel)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const statementRepository = getRepository(StatementModel);
+
+  try {
+    const statement = await statementRepository.save({
+      userId: friendUserId,
+      content: content,
+    });
+    await connection.close();
+
+    return statement;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};

@@ -41,7 +41,7 @@ export const getChatList = async (
   const connection = await createConnection();
   const chatRepository = getRepository(ChatModel);
   const chatList = await chatRepository.find({
-    where: { userId: userId },
+    where: { userId: userId, deleteFlg: 0 },
     relations: ["friend"],
   });
 
@@ -52,4 +52,29 @@ export const getChatList = async (
   }
 
   return chatList;
+};
+
+/**
+ * 相手側のChatデータを取得
+ * @param myUserId
+ * @param friendUserId
+ * @returns
+ */
+export const getFriendChat = async (
+  myUserId: number,
+  friendUserId: number
+): Promise<ChatModel | undefined> => {
+  const connection = await createConnection();
+  const chatRepository = getRepository(ChatModel);
+
+  const friendChat = await chatRepository.findOne({
+    where: { userId: friendUserId, friendUserId: myUserId },
+  });
+  await connection.close();
+
+  if (!friendChat) {
+    return;
+  }
+
+  return friendChat;
 };

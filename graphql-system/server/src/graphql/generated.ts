@@ -53,7 +53,13 @@ export type Chat = {
 
 export type ChatStatementInput = {
   chatId: Scalars["Int"];
+  friendUserId: Scalars["Int"];
   statement: Scalars["String"];
+};
+
+export type FriendInput = {
+  userId: Scalars["Int"];
+  friendUserId: Scalars["Int"];
 };
 
 /** 友達のユーザー */
@@ -71,9 +77,19 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
+  createFriend: Array<AllUser>;
+  deleteFriend: Array<AllUser>;
   login: AuthenticateResponse;
   postStatement: StatementResponse;
   register: AuthenticateResponse;
+};
+
+export type MutationCreateFriendArgs = {
+  input: FriendInput;
+};
+
+export type MutationDeleteFriendArgs = {
+  input: FriendInput;
 };
 
 export type MutationLoginArgs = {
@@ -251,6 +267,7 @@ export type ResolversTypes = {
   Chat: ResolverTypeWrapper<Chat>;
   ChatStatementInput: ChatStatementInput;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
+  FriendInput: FriendInput;
   FriendShip: ResolverTypeWrapper<FriendShip>;
   LoginInput: LoginInput;
   Mutation: ResolverTypeWrapper<{}>;
@@ -271,6 +288,7 @@ export type ResolversParentTypes = {
   Chat: Chat;
   ChatStatementInput: ChatStatementInput;
   DateTime: Scalars["DateTime"];
+  FriendInput: FriendInput;
   FriendShip: FriendShip;
   LoginInput: LoginInput;
   Mutation: {};
@@ -338,6 +356,18 @@ export type MutationResolvers<
   ParentType extends ResolversParentTypes["Mutation"] = ResolversParentTypes["Mutation"]
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
+  createFriend?: Resolver<
+    Array<ResolversTypes["AllUser"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationCreateFriendArgs, "input">
+  >;
+  deleteFriend?: Resolver<
+    Array<ResolversTypes["AllUser"]>,
+    ParentType,
+    ContextType,
+    RequireFields<MutationDeleteFriendArgs, "input">
+  >;
   login?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
