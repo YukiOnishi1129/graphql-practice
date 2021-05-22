@@ -2,9 +2,18 @@ extend type Query {
   chat: Chat!
 }
 
-# extend type Mutation {
+extend type Mutation {
+  postStatement(input: ChatStatementInput!): StatementResponse!
+}
 
-# }
+input ChatStatementInput {
+  chatId: Int!
+  statement: String!
+}
+
+type StatementResponse {
+  statement: Statement!
+}
 
 type Chat {
   id: Int!

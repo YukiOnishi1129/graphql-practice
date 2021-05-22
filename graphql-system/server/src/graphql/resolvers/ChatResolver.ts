@@ -4,14 +4,20 @@
  */
 import { ApolloError } from "apollo-server-errors";
 import { IResolvers } from "graphql-tools";
+/* graphql */
 import {
   Chat as ChatGraphQLType,
   Statement as StatementGraphQLType,
+  StatementResponse as StatementResponseGraphQLType,
 } from "../generated";
 /* Services */
 import { getMyUser } from "@Services/User";
 import { getChat } from "@Services/Chat";
-import { getChatStatementRelations } from "@Services/ChatStatementRelations";
+import { registerStatement } from "@Services/Statement";
+import {
+  getChatStatementRelations,
+  registerRelations,
+} from "@Services/ChatStatementRelations";
 /* types */
 import { ResolverContextType } from "@Types/index";
 
@@ -19,6 +25,9 @@ import { ResolverContextType } from "@Types/index";
  * ChatResolvers
  */
 export const ChatResolvers: IResolvers = {
+  /**
+   * Query
+   */
   Query: {
     /**
      * chat
@@ -84,6 +93,85 @@ export const ChatResolvers: IResolvers = {
         userId: chatData.userId,
         statement: statement,
         createdAt: chatData.createdAt,
+      };
+    },
+  },
+
+  /**
+   * Mutation
+   */
+  Mutation: {
+    /**
+     * postStatement
+     * @param parent
+     * @param args
+     * @param param2
+     */
+    async postStatement(
+      parent,
+      args,
+      { currentUser }: ResolverContextType
+    ): Promise<StatementResponseGraphQLType> {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+
+      if (!args?.input?.chatId || !args?.input?.statement) {
+        throw new ApolloError("リクエストパラメータエラーです。", "400");
+      }
+
+      /**
+       * 1. Statementテーブルへレコードを登録
+       * serviceにDB処理の関数を作成
+       */
+      const statementData = await registerStatement(
+        args.input.chatId,
+        args.input.statement
+      );
+
+      if (!statementData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
+
+      const userData = await getMyUser(statementData.userId);
+
+      if (!userData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
+
+      /**
+       * 2. 分岐処理
+       *  ChatStatementRelationsにレコードがあるか確認
+       *  レコードがない場合、relationsテーブルへ新規登録
+       */
+      const relations = await getChatStatementRelations(args.input.chatId);
+
+      if (!relations) {
+        const registerRelationsData = await registerRelations(
+          args.input.chatId,
+          args.input.statement
+        );
+
+        if (!registerRelationsData) {
+          throw new ApolloError("DBエラーです。", "500");
+        }
+      }
+
+      return {
+        statement: {
+          id: statementData.id,
+          user: {
+            id: userData.id,
+            name: userData.name,
+            email: userData.email,
+            avatar: userData.avatar,
+            createdAt: userData.createdAt,
+            friends: [],
+          },
+          content: statementData.content,
+          createdAt: statementData.createdAt,
+        },
       };
     },
   },

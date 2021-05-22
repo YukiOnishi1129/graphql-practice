@@ -29,3 +29,37 @@ export const getChatStatementRelations = async (
 
   return relations;
 };
+
+/**
+ * リレーションテーブル登録処理
+ * @param chatId
+ * @param statementId
+ * @returns
+ */
+export const registerRelations = async (
+  chatId: number,
+  statementId: number
+): Promise<
+  | ({
+      chatId: number;
+      statementId: number;
+    } & ChatStatementRelationsModel)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const relationRepository = getRepository(ChatStatementRelationsModel);
+  try {
+    const relations = await relationRepository.save({
+      chatId,
+      statementId,
+    });
+
+    await connection.close();
+
+    return relations;
+    //
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};

@@ -51,6 +51,11 @@ export type Chat = {
   createdAt: Scalars["DateTime"];
 };
 
+export type ChatStatementInput = {
+  chatId: Scalars["Int"];
+  statement: Scalars["String"];
+};
+
 /** 友達のユーザー */
 export type FriendShip = {
   __typename?: "FriendShip";
@@ -67,11 +72,16 @@ export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
   login: AuthenticateResponse;
+  postStatement: StatementResponse;
   register: AuthenticateResponse;
 };
 
 export type MutationLoginArgs = {
   input?: Maybe<LoginInput>;
+};
+
+export type MutationPostStatementArgs = {
+  input: ChatStatementInput;
 };
 
 export type MutationRegisterArgs = {
@@ -98,6 +108,11 @@ export type Statement = {
   user: User;
   content: Scalars["String"];
   createdAt: Scalars["DateTime"];
+};
+
+export type StatementResponse = {
+  __typename?: "StatementResponse";
+  statement: Statement;
 };
 
 /** ユーザー */
@@ -233,6 +248,7 @@ export type ResolversTypes = {
   Boolean: ResolverTypeWrapper<Scalars["Boolean"]>;
   AuthenticateResponse: ResolverTypeWrapper<AuthenticateResponse>;
   Chat: ResolverTypeWrapper<Chat>;
+  ChatStatementInput: ChatStatementInput;
   DateTime: ResolverTypeWrapper<Scalars["DateTime"]>;
   FriendShip: ResolverTypeWrapper<FriendShip>;
   LoginInput: LoginInput;
@@ -240,6 +256,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>;
   RegisterInput: RegisterInput;
   Statement: ResolverTypeWrapper<Statement>;
+  StatementResponse: ResolverTypeWrapper<StatementResponse>;
   User: ResolverTypeWrapper<User>;
 };
 
@@ -251,6 +268,7 @@ export type ResolversParentTypes = {
   Boolean: Scalars["Boolean"];
   AuthenticateResponse: AuthenticateResponse;
   Chat: Chat;
+  ChatStatementInput: ChatStatementInput;
   DateTime: Scalars["DateTime"];
   FriendShip: FriendShip;
   LoginInput: LoginInput;
@@ -258,6 +276,7 @@ export type ResolversParentTypes = {
   Query: {};
   RegisterInput: RegisterInput;
   Statement: Statement;
+  StatementResponse: StatementResponse;
   User: User;
 };
 
@@ -324,6 +343,12 @@ export type MutationResolvers<
     ContextType,
     RequireFields<MutationLoginArgs, never>
   >;
+  postStatement?: Resolver<
+    ResolversTypes["StatementResponse"],
+    ParentType,
+    ContextType,
+    RequireFields<MutationPostStatementArgs, "input">
+  >;
   register?: Resolver<
     ResolversTypes["AuthenticateResponse"],
     ParentType,
@@ -357,6 +382,14 @@ export type StatementResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type StatementResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["StatementResponse"] = ResolversParentTypes["StatementResponse"]
+> = {
+  statement?: Resolver<ResolversTypes["Statement"], ParentType, ContextType>;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type UserResolvers<
   ContextType = any,
   ParentType extends ResolversParentTypes["User"] = ResolversParentTypes["User"]
@@ -383,6 +416,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>;
   Query?: QueryResolvers<ContextType>;
   Statement?: StatementResolvers<ContextType>;
+  StatementResponse?: StatementResponseResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
 };
 
