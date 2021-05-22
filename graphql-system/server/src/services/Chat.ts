@@ -138,6 +138,45 @@ export const registerChat = async (
 };
 
 /**
+ * 論理削除処理
+ * @param myUserId
+ * @param friendUserId
+ * @returns
+ */
+export const logicDeleteChat = async (
+  myUserId: number,
+  friendUserId: number
+): Promise<
+  | ({
+      userId: number;
+      friendUserId: number;
+    } & ChatModel)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const chatRepository = getRepository(ChatModel);
+
+  const chatData = await chatRepository.findOne({
+    where: { userId: myUserId, friendUserId: friendUserId },
+  });
+
+  if (!chatData) {
+    return;
+  }
+
+  chatData.deleteFlg = true;
+
+  try {
+    const registerChat = await chatRepository.save(chatData);
+    await connection.close();
+    return registerChat;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};
+
+/**
  * 論理削除解除処理
  * @param myUserId
  * @param friendUserId

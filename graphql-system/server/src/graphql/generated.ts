@@ -58,7 +58,6 @@ export type ChatStatementInput = {
 };
 
 export type FriendInput = {
-  userId: Scalars["Int"];
   friendUserId: Scalars["Int"];
 };
 
@@ -77,8 +76,8 @@ export type LoginInput = {
 export type Mutation = {
   __typename?: "Mutation";
   _empty?: Maybe<Scalars["String"]>;
-  createFriend: Array<AllUser>;
-  deleteFriend: Array<AllUser>;
+  createFriend: FiendShipResponse;
+  deleteFriend: FiendShipResponse;
   login: AuthenticateResponse;
   postStatement: StatementResponse;
   register: AuthenticateResponse;
@@ -141,6 +140,11 @@ export type User = {
   avatar: Scalars["String"];
   createdAt: Scalars["DateTime"];
   friends: Array<FriendShip>;
+};
+
+export type FiendShipResponse = {
+  __typename?: "fiendShipResponse";
+  allUsers: Array<AllUser>;
 };
 
 export type ResolverTypeWrapper<T> = Promise<T> | T;
@@ -276,6 +280,7 @@ export type ResolversTypes = {
   Statement: ResolverTypeWrapper<Statement>;
   StatementResponse: ResolverTypeWrapper<StatementResponse>;
   User: ResolverTypeWrapper<User>;
+  fiendShipResponse: ResolverTypeWrapper<FiendShipResponse>;
 };
 
 /** Mapping between all available schema types and the resolvers parents */
@@ -297,6 +302,7 @@ export type ResolversParentTypes = {
   Statement: Statement;
   StatementResponse: StatementResponse;
   User: User;
+  fiendShipResponse: FiendShipResponse;
 };
 
 export type AllUserResolvers<
@@ -357,13 +363,13 @@ export type MutationResolvers<
 > = {
   _empty?: Resolver<Maybe<ResolversTypes["String"]>, ParentType, ContextType>;
   createFriend?: Resolver<
-    Array<ResolversTypes["AllUser"]>,
+    ResolversTypes["fiendShipResponse"],
     ParentType,
     ContextType,
     RequireFields<MutationCreateFriendArgs, "input">
   >;
   deleteFriend?: Resolver<
-    Array<ResolversTypes["AllUser"]>,
+    ResolversTypes["fiendShipResponse"],
     ParentType,
     ContextType,
     RequireFields<MutationDeleteFriendArgs, "input">
@@ -439,6 +445,18 @@ export type UserResolvers<
   __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
 };
 
+export type FiendShipResponseResolvers<
+  ContextType = any,
+  ParentType extends ResolversParentTypes["fiendShipResponse"] = ResolversParentTypes["fiendShipResponse"]
+> = {
+  allUsers?: Resolver<
+    Array<ResolversTypes["AllUser"]>,
+    ParentType,
+    ContextType
+  >;
+  __isTypeOf?: IsTypeOfResolverFn<ParentType, ContextType>;
+};
+
 export type Resolvers<ContextType = any> = {
   AllUser?: AllUserResolvers<ContextType>;
   AuthenticateResponse?: AuthenticateResponseResolvers<ContextType>;
@@ -450,6 +468,7 @@ export type Resolvers<ContextType = any> = {
   Statement?: StatementResolvers<ContextType>;
   StatementResponse?: StatementResponseResolvers<ContextType>;
   User?: UserResolvers<ContextType>;
+  fiendShipResponse?: FiendShipResponseResolvers<ContextType>;
 };
 
 /**

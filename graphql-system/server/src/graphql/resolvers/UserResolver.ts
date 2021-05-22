@@ -26,11 +26,13 @@ import {
   isUserFriendship,
   registerFriendShip,
   restoreFriendShip,
+  logicDeleteFriendShip,
 } from "@Services/FriendShip";
 import {
   getChatByUserIdAndFriendId,
   registerChat,
   restoreChat,
+  logicDeleteChat,
 } from "@Services/Chat";
 /* types */
 import { ResolverContextType } from "@Types/index";
@@ -184,6 +186,13 @@ export const UserResolvers: IResolvers = {
       };
     },
 
+    /**
+     * 友達関係修復処理
+     * @param parent
+     * @param args
+     * @param param2
+     * @returns
+     */
     async createFriend(parent, args, { currentUser }: ResolverContextType) {
       // contextのuserデータの有無を確認
       if (!currentUser) {
@@ -304,6 +313,109 @@ export const UserResolvers: IResolvers = {
         if (!restoreYourChat) {
           throw new ApolloError("DBエラーです。", "500");
         }
+      }
+
+      /**
+       * userテーブル取得
+       */
+      const users = await getAllUser(currentUser.id);
+
+      if (!users) {
+        throw new ApolloError("リクエストエラーです。", "400");
+      }
+      const allUsers: AllUserGraphQLType[] = [];
+      for await (const user of users) {
+        allUsers.push({
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          friendFlg: await isUserFriendship(user.id, currentUser.id),
+          createdAt: user.createdAt,
+        });
+      }
+
+      return {
+        allUsers: allUsers,
+      };
+    },
+
+    /**
+     * 絶交処理
+     * @param parent
+     * @param args
+     * @param param2
+     * @returns
+     */
+    async deleteFriend(parent, args, { currentUser }: ResolverContextType) {
+      // contextのuserデータの有無を確認
+      if (!currentUser) {
+        throw new ApolloError("認証エラーです。", "401");
+      }
+
+      if (!args?.input?.friendUserId) {
+        throw new ApolloError("リクエストパラメータエラーです。", "400");
+      }
+      const friendUserId = args.input.friendUserId;
+
+      const friendshipData = await getFriedShipByUserIdAndFriendId(
+        currentUser.id,
+        friendUserId
+      );
+      if (!friendshipData || friendshipData.deleteFlg) {
+        throw new ApolloError(
+          "整合性エラーです。friendShipデータが存在しないか、すでに論理削除されています。",
+          "400"
+        );
+      }
+      // chatテーブルの確認
+      const chatData = await getChatByUserIdAndFriendId(
+        currentUser.id,
+        friendUserId
+      );
+      // Chatテーブルにレコードがある場合はエラー
+      if (!chatData || chatData.deleteFlg) {
+        throw new ApolloError(
+          "整合性エラーです。chatデータが存在しないか、すでに論理削除されています。",
+          "400"
+        );
+      }
+
+      /**
+       * friendShipのdeleteFlgをtrueにする
+       */
+      // 自分のレコード
+      const restoreMyFriendShipData = await logicDeleteFriendShip(
+        currentUser.id,
+        friendUserId
+      );
+      if (!restoreMyFriendShipData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
+      // 友達のレコード
+      const restoreYourFriendShipData = await logicDeleteFriendShip(
+        friendUserId,
+        currentUser.id
+      );
+      if (!restoreYourFriendShipData) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
+
+      /**
+       * chatのdeleteFlgをtrueにする
+       */
+      // 自分のレコード
+      const restoreMyChat = await logicDeleteChat(currentUser.id, friendUserId);
+      if (!restoreMyChat) {
+        throw new ApolloError("DBエラーです。", "500");
+      }
+      // 友達のレコード
+      const restoreYourChat = await logicDeleteChat(
+        friendUserId,
+        currentUser.id
+      );
+      if (!restoreYourChat) {
+        throw new ApolloError("DBエラーです。", "500");
       }
 
       /**

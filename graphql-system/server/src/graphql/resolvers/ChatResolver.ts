@@ -13,10 +13,7 @@ import {
 /* Services */
 import { getMyUser } from "@Services/User";
 import { getChat, getChatList, getFriendChat } from "@Services/Chat";
-import {
-  registerStatement,
-  registerFriendStatement,
-} from "@Services/Statement";
+import { registerStatement } from "@Services/Statement";
 import {
   getChatStatementRelations,
   registerRelations,

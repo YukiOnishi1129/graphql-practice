@@ -108,11 +108,52 @@ export const registerFriendShip = async (
 };
 
 /**
+ * 論理削除処理
+ * @param myUserId
+ * @param friendUserId
+ * @returns
+ */
+
+export const logicDeleteFriendShip = async (
+  myUserId: number,
+  friendUserId: number
+): Promise<
+  | ({
+      userId: number;
+      friendUserId: number;
+    } & FriendShip)
+  | undefined
+> => {
+  const connection = await createConnection();
+  const friendRepository = getRepository(FriendShip);
+
+  const friendShipData = await friendRepository.findOne({
+    where: { userId: myUserId, friendUserId: friendUserId },
+  });
+
+  if (!friendShipData) {
+    return;
+  }
+
+  friendShipData.deleteFlg = true;
+
+  try {
+    const registerData = await friendRepository.save(friendShipData);
+    await connection.close();
+    return registerData;
+  } catch (error) {
+    console.log(error);
+    await connection.close();
+  }
+};
+
+/**
  * 論理削除解除処理
  * @param myUserId
  * @param friendUserId
  * @returns
  */
+
 export const restoreFriendShip = async (
   myUserId: number,
   friendUserId: number
