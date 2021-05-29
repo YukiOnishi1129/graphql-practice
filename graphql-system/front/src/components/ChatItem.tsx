@@ -2,15 +2,16 @@
  * @package components
  */
 import React from "react";
-import { useQuery } from "@apollo/client";
-import { CHAT_QUERY, GetChat } from "../graphql/queries/chat.query";
 import { NextPage } from "next";
+
+import { useGetChatQuery } from "@/types/queries";
 
 interface ChatItemProps {}
 
 export const ChatItem: NextPage<ChatItemProps> = () => {
   // useQuery: データ取得
-  const { loading, error, data } = useQuery<GetChat>(CHAT_QUERY);
+  //   const { loading, error, data } = useQuery<GetChatQuery>(CHAT_QUERY);
+  const { loading, error, data } = useGetChatQuery();
 
   if (loading) return <p>Loading</p>;
   if (error) return <p>Error: {JSON.stringify(error)}</p>;
@@ -18,10 +19,6 @@ export const ChatItem: NextPage<ChatItemProps> = () => {
 
   const { chat } = data;
   if (!chat) return <p>データなし</p>;
-
-  console.log(chat);
-
-  //   return <p>データ</p>;
 
   return (
     <div>
