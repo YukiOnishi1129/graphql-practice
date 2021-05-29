@@ -38,15 +38,16 @@ export const ChatResolvers: IResolvers = {
      */
     async chat(
       parent,
-      args,
-      { currentUser }: ResolverContextType
+      args
+      // { currentUser }: ResolverContextType
     ): Promise<ChatGraphQLType> {
       // contextのuserデータの有無を確認
-      if (!currentUser) {
-        throw new ApolloError("認証エラーです。", "401");
-      }
+      // if (!currentUser) {
+      //   throw new ApolloError("認証エラーです。", "401");
+      // }
 
-      const chatData = await getChat(currentUser.id);
+      // TODO: 引数はcurrentUser.id
+      const chatData = await getChat(1);
       if (!chatData) {
         throw new ApolloError("リクエストエラーです。", "400");
       }

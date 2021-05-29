@@ -18,10 +18,10 @@ docker-compose restart
 
 docker-compose down
 
-// app コンテナにアクセス
+// front コンテナにアクセス
 docker exec -it graphql_front sh
 
-// app コンテナにアクセス
+// server コンテナにアクセス
 docker exec -it graphql_server sh
 
 // mysql コンテナにアクセス
