@@ -1,0 +1,144 @@
+query GetMe {
+  me {
+    id
+    name
+    email
+    avatar
+    friends {
+      user {
+        name
+        createdAt
+        friends {
+          user {
+            name
+          }
+        }
+      }
+    }
+  }
+}
+
+query GetAllUser {
+  allUsers {
+    id
+    name
+    email
+    avatar
+    friendFlg
+    createdAt
+  }
+}
+
+query GetChat {
+  chat {
+    id
+    friend {
+      id
+      name
+      avatar
+    }
+    userId
+    statement {
+      id
+      user {
+        id
+        name
+        avatar
+      }
+      content
+      createdAt
+    }
+    createdAt
+  }
+}
+
+query GetAllChat {
+  allChat {
+    id
+    friend {
+      id
+      name
+      avatar
+    }
+    userId
+    statement {
+      user {
+        id
+        name
+        avatar
+      }
+      content
+      createdAt
+    }
+    createdAt
+  }
+}
+
+mutation SignIn($loginInput: LoginInput!) {
+  login(input: $loginInput) {
+    user {
+      id
+      name
+      email
+      avatar
+      createdAt
+    }
+    token
+  }
+}
+
+mutation CreateFriendship($friendInput: FriendInput!) {
+  createFriend(input: $friendInput) {
+    allUsers {
+      id
+      name
+      email
+      avatar
+      friendFlg
+      createdAt
+    }
+  }
+}
+
+mutation DeleteFriendship($friendInput: FriendInput!) {
+  deleteFriend(input: $friendInput) {
+    allUsers {
+      id
+      name
+      email
+      avatar
+      friendFlg
+      createdAt
+    }
+  }
+}
+
+mutation SignUp($registerInput: RegisterInput!) {
+  register(input: $registerInput) {
+    user {
+      id
+      name
+      email
+      avatar
+      createdAt
+    }
+    token
+  }
+}
+
+mutation SendChat($chatStatementInput: ChatStatementInput!) {
+  postStatement(input: $chatStatementInput) {
+    statement {
+      id
+      user {
+        id
+        name
+        email
+        avatar
+        createdAt
+      }
+      content
+      createdAt
+    }
+  }
+}
